@@ -1,0 +1,28 @@
+Source: backupninja
+Section: admin
+Priority: optional
+Maintainer: Micah Anderson <micah@riseup.net>
+Build-Depends: debhelper (>= 4.0.0), autoconf, automake
+Build-Conflicts: autoconf2.13
+Standards-Version: 3.8.0
+Homepage: http://code.autistici.org/trac/backupninja
+Vcs-Svn: http://code.autistici.org/trac/backupninja/browser
+
+Package: backupninja
+Architecture: all
+Depends: gawk | mawk, dialog, bash (>=2.05b-26), mailx | mailutils
+Suggests: rdiff-backup, hwinfo, genisoimage, wodim, cdrdao, dvd+rw-tools, debconf-utils, mdadm
+Description: lightweight, extensible meta-backup system
+ Backupninja lets you drop simple config files in /etc/backup.d to
+ coordinate system backups. Backupninja is a master of many arts,
+ including incremental remote filesystem backup, MySQL backup, and ldap
+ backup. By creating simple drop-in handler scripts, backupninja can
+ learn new skills. Backupninja is a silent flower blossom death strike to
+ lost data.
+ .
+ In addition to backing up regular files, Backupninja has handlers to ease 
+ backing up: ldap, maildir, MySQL, svn, trac, and the output from shell scripts 
+ .
+ Backupninja currently supports common backup utilities, easing their 
+ configuration, currently supported are: rdiff-backup, duplicity, CD/DVD
+

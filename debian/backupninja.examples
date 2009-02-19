@@ -1,0 +1,11 @@
+examples/example.dup
+examples/example.svn
+examples/example.sys
+examples/example.rdiff
+examples/example.sh
+examples/example.mysql
+examples/example.ldap
+examples/example.makecd
+examples/example.trac
+examples/example.pgsql
+debian/backupninja/etc/backupninja.conf

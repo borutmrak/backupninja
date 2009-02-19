@@ -1,0 +1,4 @@
+usr/lib
+usr/sbin
+usr/share/backupninja
+etc/backup.d

@@ -1,0 +1,4 @@
+debian/backupninja/usr/share/man/man1/backupninja.1
+debian/backupninja/usr/share/man/man5/backupninja.conf.5
+debian/backupninja/usr/share/man/man5/backup.d.5
+debian/backupninja/usr/share/man/man1/ninjahelper.1

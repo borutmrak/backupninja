@@ -1,0 +1,562 @@
+backupninja (0.9.6-4) unstable; urgency=low
+
+  * Fix df error message from cron (Closes: #497535)
+  * Removed Lenny unsupported desturl example (Closes: #507679)
+  * Fixed Lintain warning: maintainer-script-ignores-errors preinst
+	
+ -- Micah Anderson <micah@riseup.net>  Mon, 08 Dec 2008 09:41:22 -0500
+
+backupninja (0.9.6-3) unstable; urgency=low
+
+  * Removed configure.ac and regenerate the autoconf junk so 
+    that substitution variables get set properly (Closes: #494728)
+
+ -- Micah Anderson <micah@riseup.net>  Fri, 25 Jul 2008 16:19:54 -0400
+
+backupninja (0.9.6-2) unstable; urgency=low
+
+  * Update makecd handler to work with toolset in lenny
+  * Fix debian/control to Suggest the correct makecd toolset
+
+ -- Micah Anderson <micah@riseup.net>  Fri, 25 Jul 2008 16:15:48 -0400
+
+backupninja (0.9.6-1) unstable; urgency=medium
+
+  * Reduce build-dependency on automake1.9 to just automake
+  * Added Suggests on debconf-utils so the debconf-get-selections will be
+    run in the sys hander to capture package debconf selection states
+  * Add mdadm as a Suggests for sys handler RAID information gathering
+  * Upgrade to standards version 3.8.0 (no changes)
+  * Change debian/control to use MySQL spelling for lintian
+  * Change debian/control to use cdrkit instead of mkisofs and cdrecord
+  * New upstream release
+    . Fix CSTREAM definition in backupninja
+    . Allow entire backup to be halted by an action (Closes: #455836)
+    . Fixed tr warnings (Closed: #452669)
+    . added vservers_running function
+    . removed fall-back for missing mktemp
+    . General cleanup in dup handler, added support for newer duplicity lenny
+    . Run remove-older in dup when $keep is not set to yes (Closes: #458816)
+    . Run duplicity cleanup before any other command
+    . Support every duplicity-supported transport with new config option
+      desturl (Closes: #483712, #346040)
+    . Relax duplicty $include test to allow for backups of Vservers
+    . Set secure permissions on tmpdir in duplicity when it is created
+    . Add support to HDB backend (Closes: #476910)
+    . Fixed ignore_version rdiff default value
+    . Add sshoptions for unspecified remote-schema (Closes: #424639)
+    . Added wget handler
+    . ixed bug where maildirs that start with a number were skipped
+    . Make maildir helper look ini every subdirectory of source directory
+    . Make deleted maildirs record date they were deleted
+    . Add destid_file config option or alternate ssh pubkey auth file maildir
+    . Update sys handler to be more smart for 2.6 kernels
+    . Support sys selection of VServers to run on
+    . Capture package debconf selection states during debconf-get-selections
+    . Fixed catifexec function to work properly in sys handler
+    . Added more robust software RAID information capture via mdadm info
+    . Stop failing on trac backups if just one fails
+
+ -- Micah Anderson <micah@riseup.net>  Mon, 21 Jul 2008 17:02:15 -0400
+
+backupninja (0.9.5-3) unstable; urgency=low
+
+  * Add improved duplicity support (>= 0.4.4) command line syntax:
+    . run remove-older-than when $keep is not set to yes (Closes: #458816),
+    . and run "duplicity cleanup" before any other duplicity command
+    . full/incremental backup switch also migrated to the new syntax.
+  * Remove versioned Suggest on duplicity
+  * Add patch from Matthew Palmer to rdiff handler to incorporate sshoptions
+    into options via remote-schema not already specified (Closes: #424639)
+  * Fixed Vcs-Svn field (Closes: #455814)
+
+ -- Micah Anderson <micah@riseup.net>  Wed, 16 Jan 2008 15:44:13 -0500
+
+backupninja (0.9.5-2) unstable; urgency=low
+
+  * Fixed ignore_version default value in rdiff handler
+  * Updated standards version to 3.7.3 (no changes)
+  * Removed unused /usr/bin from debian/backupninja.dirs
+
+ -- Micah Anderson <micah@riseup.net>  Wed, 05 Dec 2007 15:42:47 -0500
+
+backupninja (0.9.5-1) unstable; urgency=low
+
+  * Added etc/backup.d to debian/backupninja.dirs (Closes: #452666)
+  * Added Homepage and Vcs-Svn fields to debian/control
+  * Fixed tr construct reporting a warning (Closes: #452669)
+  * Add depends on mailx | mailutils (Closes: #452670)
+  * New upstream release 
+    . ldap quoting, compress=yes now doesn't create empty files (Closes: #394935) 
+    . fixed mysql config combination empty file problem (Closes: #402679)
+    . added 'nodata' to mysql to backup only table structure (Closes: #408829)
+    . removed mysqldump header in selecting databases, and cleanup (Closes: #452039)
+    . Fix broken PGSQLUSER support (Closes: #396578)
+    . Handle 'keep = yes' rdiff-backup option to disable backup removal (Closes: #424633)
+    . Allow for rdiff-backup version check override (Closes: #424632)
+    . rsnap/rub merged to rsync, added to Makefile.am (Closes: #440554)
+    . Fix bug in sys handler where vrootdir is on its own partition (Closes: #395928)
+    . Enhance sfdisk error and output handling in sys handler (Closes: #396632)
+    . Allow for disabling sfdisk in sys handler, useful for xen/vserver (Closes: #404071)
+    . Add details in example.sys about how __star__ works (Closes: #409192)
+    . Support duplicity => 0.4.3 invocation syntax, no more --ssh-command (Closes: #447425)
+  * Added missing parameter in documentation and example file for rsync handler
+  * Added /tmp dir config option for duplicity
+  * Add fix from r523 for duplicity handler
+  * Add version restriction to duplicity Suggests because backupninja's 
+    duplicity handler doesn't support 0.4.4
+
+ -- Micah Anderson <micah@riseup.net>  Sat, 10 Nov 2007 21:13:29 -0500
+
+backupninja (0.9.4-6) unstable; urgency=high
+
+  * Version number bump to get the regression from last upload resolved
+
+ -- Micah Anderson <micah@riseup.net>  Thu, 14 Dec 2006 23:09:14 -0700
+
+backupninja (0.9.4-5) unstable; urgency=high
+
+  * Fixed case where odd combination of configuration options caused sqldump
+    backups to get overwritten with an empty file (Closes: #402679)
+
+ -- Micah Anderson <micah@riseup.net>  Wed,  1 Nov 2006 15:31:19 -0700
+
+backupninja (0.9.4-4) unstable; urgency=high
+
+  * Fix vrootdir bug in sys handler (Closes: #395928)
+  * Fix typo in sys handler that broke vserver handling
+  * Fix for config file permissions handling
+  * Enhance sfdisk error/output handling, now warns when it cannot
+    backup a partition table, and stays quiet when it can (Closes: #396632)
+  * Fix support for configuring PGSQLUSER for real this time, and document it,
+    previously this broke pgsql handling for vservers (Closes: #396578)
+  * Fix rub fsck error, also changed to use internal vserver libraries
+  * Fix missing binary-arch target in debian/rules (Closes: #395578)
+  * Urgency set to high to fix RC bugs
+
+ -- Micah Anderson <micah@riseup.net>  Fri, 13 Oct 2006 18:33:34 -0600
+
+backupninja (0.9.4-3) unstable; urgency=medium
+
+  * Added postinst to fix perms on /etc/backup.d (Closes: #392525)
+  * Added fix from upstream to make rub handler work
+
+ -- Micah Anderson <micah@riseup.net>  Sat,  7 Oct 2006 19:14:32 -0600
+
+backupninja (0.9.4-2) unstable; urgency=medium
+
+  * Fix configuration file permission checks, patch applied
+    to fix #370396 broke this, medium urgency as this keeps things from
+    working
+  * Fix sys handler typo which broke Linux-Vserver handling
+  * Automake pre-existing /etc/backup.d fix
+
+ -- Micah Anderson <micah@riseup.net>  Sat,  7 Oct 2006 18:58:42 -0600
+
+backupninja (0.9.4-1) unstable; urgency=medium
+
+  * New upstream release (0.9.4)
+    . admingroup config option (Closes: #370396)
+    . stat call fixes (Closes: #382747)
+    . sqldump compress in-line (Closes: #370778)
+    . fixed shell expansion (Closes: #363297)
+    . fixed src set to the trac repo directly (Closes: #382737)
+    . many other fixes, new handlers and changes, see upstream Changelog
+  * added AUTHORS to debian/docs
+  * debian build changes to change with upstream
+  * bumped standards version to current (no changes)
+ -- Micah Anderson <micah@riseup.net>  Fri,  6 Oct 2006 13:04:45 -0600
+
+backupninja (0.9.3-7) UNRELEASED; urgency=low
+
+  * Removed example files from /usr/share/backupninja (Closes: #371858)
+
+ -- Micah Anderson <micah@debian.org>  Sat,  8 Apr 2006 17:04:12 -0400
+
+backupninja (0.9.3-6) unstable; urgency=high
+
+  * Recursively ignore subdirs in /etc/backup.d (Closes: #361102)
+  * Fix overzealous su quoting in mysql handler causing breakage
+  * Make a vegan cake for intrigeri
+
+ -- Micah Anderson <micah@riseup.net>  Wed,  5 Apr 2006 00:54:46 -0400
+
+backupninja (0.9.3-5) unstable; urgency=medium
+
+  * Brought in changes from upstream to fix various issues:
+     . Fixed erroneous removal of tmpfile in mysql handler
+     . Fixed inversed vsname emptiness check in mysql handler
+     . Fixed su quote usage to be more posixy (Closes: #358995)
+     . Fixed improper include/exclude symlink dereference in
+       rdiff-backup and dup handlers
+     . found_vservers: escaped special grep repetition character +
+     . Add some additional default excludes (Closes: #353412)
+     . Remove over zelous vsnames check (Closes: #360485)
+
+ -- Micah Anderson <micah@riseup.net>  Fri,  3 Feb 2006 14:54:46 -0500
+
+backupninja (0.9.3-4) unstable; urgency=low
+
+  * Fixed improper use of $vuserhome in mysql handler (Closes: #351083)
+
+ -- Micah Anderson <micah@riseup.net>  Fri,  3 Feb 2006 14:41:05 -0500
+
+backupninja (0.9.3-3) unstable; urgency=low
+
+  * Fixed improper readlink syntax (Closes: #351083) 
+  * Included fixes to mysql, pgsql, and svn handlers to also fix inverted
+    vsname test
+
+ -- Micah Anderson <micah@riseup.net>  Wed,  1 Feb 2006 13:14:56 -0500
+
+backupninja (0.9.3-2) unstable; urgency=low
+
+  * Small change to mysql helper to invert vserver vsname test
+
+ -- Micah Anderson <micah@riseup.net>  Tue, 31 Jan 2006 14:49:32 -0500
+
+backupninja (0.9.3-1) unstable; urgency=low
+
+  * New upstream release
+    . autotools fixes (Closes: #346303)
+    . backupninja.conf gets default paths added for clarity
+    . vservers lib functions expanded into backupninja and handlers
+    . fixed globbing in include/exclude in duplicity and rdiff handlers
+      (Closes: #348022)
+    . warnings if vsnames or vsincludes are enabled but vserver support
+      is enabled in backupninja.conf
+    . multiple vsnames in configs now functional
+    . rdiff handler now can have configured exactly which vservers should be 
+      backed up
+    . ninjahelper now reports an error if the helper script has a syntax error
+    . lib/vserver improvements in testing VROOTDIR, availability and
+      proper canonicalization, as well as adding vservers_exist and some
+      warnings
+
+ -- Micah Anderson <micah@riseup.net>  Thu, 19 Jan 2006 19:21:51 -0500
+
+backupninja (0.9.2-3) unstable; urgency=low
+
+  * Pulled in some fixes from upstream for rdiff.helper ninjahelper:
+    . fixed errors in create remote dir
+    . code formatting cleanup (three spaces indent)
+    . fixed bug which caused only first include/exclude dir to
+      have "include = "
+    . fixed globbing bug with exclude
+
+ -- Micah Anderson <micah@riseup.net>  Tue,  3 Jan 2006 11:20:24 -0500
+
+backupninja (0.9.2-2) unstable; urgency=low
+
+  * Fixed no user defaults file mysql handler problem
+
+ -- Micah Anderson <micah@riseup.net>  Thu, 29 Dec 2005 15:31:22 -0500
+
+backupninja (0.9.2-1) unstable; urgency=low
+
+  * New upstream release
+    . Update backupninja.conf.5 man page to include "when" 
+      and "vservers" (Closes: #338512)
+    . Updated debian/control to Depend: on bash (Closes: #338795)
+    . Fixed broken toint() causing backups not to run when set to "everyday"
+      (Closes: #341881)
+    . Trac handler mkdir subdirectory problem fixed (Closes: #344156)
+    . Ninjahelper rdiff-backup fixes
+    . Linux-Vserver related functions added for ninjahelper
+    . New Linux-Vserver related functions added to dup and pgsql helpers
+    . Code re-factoring to make shared functions more available
+    . Pgsql and mysql helper bugfixes
+    . Duplicity handler fixed globbing support in include and exclude options
+      (Closes: #338796)
+    . Duplicity ninjahelper added (Closes: #340640)
+    . Ninjahelper man page added (Closes: #341239)
+    . Remove compat setting from debian/rules
+    . Fix debian/NEWS file to be the standard format
+
+ -- Micah Anderson <micah@riseup.net>  Thu, 29 Dec 2005 14:21:48 -0500
+
+backupninja (0.9.1-1) unstable; urgency=low
+
+  * New upstream release
+    . New autotools installation method
+    . rdiff ninjahelper significantly improved (Closes: #335966)
+    . makecd ninjahelper added
+    . ninjahelper generated files now created with more sane
+      permissions (Closes: #336992)
+    . subversion handler now uses svnadmin hotcopy (Closes: #336994) 
+
+ -- Micah Anderson <micah@riseup.net>  Sat, 29 Oct 2005 00:28:00 -0400
+
+backupninja (0.9-1) unstable; urgency=low
+
+  * Upgraded to the new release
+    . Upstream includes fix for CAN-2005-3111 (fixed in 0.8-2)	
+    . fixed incorrect find positional
+    . changed direct grep of /etc/passwd to getent passwd.
+    . rdiff helper has much better information on failed ssh attempt
+      (patch from cmccallum@thecsl.org).
+    . rdiff handler now supports remote source and local dest. 
+      (patch from cmccallum@thecsl.org).
+    . man pages are greatly improved (also new backup.d.5 man page)
+
+  * Updated debian/backupninja.manpages for new location and man pages
+  * Updated debian/backupninja.examples to include pgsql example
+    and to adjust for new location of files in upstream
+  * Updated debian/rules dh_installchangelogs for new upstream location
+  * Updated debian/docs for new upstream location of README
+
+ -- Micah Anderson <micah@riseup.net>  Tue, 11 Oct 2005 00:01:17 -0400
+
+backupninja (0.8-2) unstable; urgency=high
+
+  * Fix for insecure temporary file creation
+
+ -- Micah Anderson <micah@riseup.net>  Wed, 28 Sep 2005 10:49:15 -0400
+
+backupninja (0.8-1) unstable; urgency=low
+
+  * Upgraded to new upstream release
+    . pgsql handler added
+    . vserver support expanded to duplicity, pgsql
+    . vserver support improved in mysql, svn, rdiff, dup and sys handlers
+    . added ninjahelper, .disabled information to documentation
+    . sys handler improved
+    . permission checks enhancements
+    . added 'ignores' for mysql handler
+  * Added duplicity to Suggests
+  * Updated package description so it lists the different methods backupninja
+    is aware of
+  * Removed erroneous magic file marker in pgsql handler
+  * Changed FSF address in debian/copyright
+
+ -- Micah Anderson <micah@riseup.net>  Tue, 27 Sep 2005 21:16:48 -0400
+
+backupninja (0.7-2) unstable; urgency=low
+
+  * Fixed broken vserver element of the sys handler
+  * fixed bug when specifying multiple 'when' options
+
+ -- Micah Anderson <micah@riseup.net>  Mon, 18 Jul 2005 14:58:44 -0500
+
+backupninja (0.7-1) unstable; urgency=low
+
+  * New upstream release:
+    . vserver support added to handlers
+    . handlers can now be disabled by changing their name to have .disabled
+    . duplicity handler improved
+    . trac handler added (Closes: #310437)
+    . makecd DVD/CD burner handler added (Closes: #317356)
+    . mysql handler updated
+    . ninjahelper curses 'wizard' added to aid in setting up configs
+    . logfile output improved
+    . configfile option added to mysql handler (Closes: #305870)
+  * Added makecd, duplicity and svn handler to examples
+  * Added suggests on mkisofs, cdrecord, dvd+rw-tools for makecd handler
+  * Updated Standards-Version to 3.6.2
+  * Added dialog to debian/control Depends for ninjahelper
+
+ -- Micah Anderson <micah@riseup.net>  Fri,  3 Jun 2005 17:34:48 -0500
+
+backupninja (0.5-3) unstable; urgency=medium
+
+  * Implemented fix to cause fatal errors in the backupninja script itself
+    to be reported, rather than be silently ignored (Closes: #307620)
+
+ -- Micah Anderson <micah@riseup.net>  Thu, 21 Apr 2005 13:57:25 -0500
+
+backupninja (0.5-2) unstable; urgency=high
+
+  * Added patches to enhance ldap backend, default backup method
+    now uses ldapsearch instead of slapcat, required configuration
+    options include passwordfile and binddn to work with ldapsearch.
+    See the options in the examples/example.ldap (Closes: #305535)
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 17 Apr 2005 19:22:13 -0500
+
+backupninja (0.5-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 17 Apr 2005 19:14:33 -0500
+
+backupninja (0.4.4-2) unstable; urgency=medium
+
+  * Added minor patch to fix configs in /etc/backup.d not being processed
+    in numerical order.
+
+ -- Micah Anderson <micah@debian.org>  Thu, 24 Mar 2005 12:51:05 -0600
+
+backupninja (0.4.4-1) unstable; urgency=low
+
+  * New upstream release:
+    . Fixes pathing problem causing sfdisk not to be found (Closes: #297091)
+    . Adds some new experimental handlers and options to existing handlers
+    . Fixes the terminal escape sequences bug by adding a configuration option 
+      to turn these off (Closes: #285939)
+  * Added Suggests on hwinfo
+  * Changed copyright to reflect upstream svn repo path change and
+    new address
+  * Added patch to fix duplicate root problem with the mysql 
+    handler (Closes: #300717)
+  * Added patch to fix svn handler always reporting a failure
+
+ -- Micah Anderson <micah@riseup.net>  Tue, 15 Mar 2005 00:54:12 -0600
+
+backupninja (0.4.2-4) unstable; urgency=low
+
+  * Removed dependency on sfdisk, its included with util-linux nowdays
+
+ -- Micah Anderson <micah@riseup.net>  Thu, 13 Jan 2005 17:24:20 -0600
+
+backupninja (0.4.2-3) unstable; urgency=low
+
+  * Fixed new lintian errors
+
+ -- Micah Anderson <micah@riseup.net>  Thu, 13 Jan 2005 10:46:07 -0600
+
+backupninja (0.4.2-2) unstable; urgency=low
+
+  * Upgraded to latest upstream release, see NEWS for new debugging
+    and scheduling changes (Closes: #285939)
+  * Updated man pages to reflect new changes to upstream.
+  * Fixed install of logrotate config being installed into a directory,
+    also removed dh_installlogrotate from debian/rules since it wasn't
+    being used.
+
+ -- Micah Anderson <micah@riseup.net>  Wed, 12 Jan 2005 11:17:59 -0600
+
+backupninja (0.4-1) unstable; urgency=low
+
+  * Upgraded to latest upstream release
+  * Added example.sys to be installed into examples directory
+  * Added Suggests on sfdisk and discover
+  * Updated man pages to have scheduling information
+
+ -- Micah Anderson <micah@riseup.net>  Sat,  1 Jan 2005 09:57:57 -0600
+
+backupninja (0.3.4-1) unstable; urgency=low
+
+  * New upstream release, more compatible with older coreutils in woody
+  * Put backupninja.conf in examples (Closes: #282575)
+
+ -- Micah Anderson <micah@riseup.net>  Sun,  5 Dec 2004 21:26:43 -0600
+
+backupninja (0.3.3-2) unstable; urgency=low
+
+  * Added backupninja and backupninja.conf manual pages, penned
+    by the sword of Stefani, thanks!
+
+ -- Micah Anderson <micah@riseup.net>  Mon, 22 Nov 2004 18:09:24 -0600
+
+backupninja (0.3.3-1) unstable; urgency=low
+  
+  * Modified description in debian/control
+  * Dependency on awk can now be satisfied by gawk or mawk
+  * Removed dependency on stat or coreutils
+  * Upgraded to latest version (Closes: #282360)
+
+ -- Micah Anderson <micah@riseup.net>  Mon, 22 Nov 2004 12:04:40 -0600
+
+backupninja (0.3.2-2) unstable; urgency=low
+
+  * handler error and warning messages are sent with the notify email
+
+ -- Micah Anderson <micah@riseup.net>  Wed, 17 Nov 2004 16:02:24 -0600
+
+backupninja (0.3.2-1) unstable; urgency=low
+
+  * Added dependency on stat (woody) or coreutils (sarge)
+  * Updated copyright page to include the svn repository
+  * Upgraded to 0.3.2, solving the handler executable problem 
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 14 Nov 2004 17:11:53 -0600
+
+backupninja (0.3.1-4) unstable; urgency=low
+
+  * Changed the copyright page to list the correct URL (Closes: #280488)
+
+ -- Micah Anderson <micah@riseup.net>  Thu, 11 Nov 2004 19:20:32 -0600
+
+backupninja (0.3.1-3) unstable; urgency=low
+
+  * Fixed the example.rdiff to have the proper equals signs in the
+    includes
+  * Changed cron.d/backupninja to call backupninja from /usr/sbin instead
+    of /usr/bin, also changed install to put it there instead
+
+ -- Micah Anderson <micah@riseup.net>  Tue,  9 Nov 2004 17:05:22 -0800
+
+backupninja (0.3.1-2) unstable; urgency=low
+
+  * Added example.ldap config for doing backups of ldap data
+  * Made short description more descriptive, and less creative, the
+    muse cries. (Closes: #280294)
+  * Fixed the incorrect URL specified in the copyright file. (Closes: #280488)
+
+ -- Micah Anderson <micah@riseup.net>  Sat,  6 Nov 2004 11:52:04 -0800
+
+backupninja (0.3.1-1) unstable; urgency=low
+
+  * New upstream source
+  * Removed dependencies on php and pear libraries, new version is
+    bash only
+
+ -- Micah Anderson <micah@riseup.net>  Sat, 06 Nov 2004 11:10:35 -0800
+
+backupninja (0.2-1) unstable; urgency=low
+
+  * Updated from upstream source
+  * Added example for mysql backups
+
+ -- Micah Anderson <micah@riseup.net>  Tue, 12 Oct 2004 15:35:57 -0500
+
+backupninja (0.1-6) unstable; urgency=low
+
+  * Removed dh_installlogroate and do it in dh_install instead
+
+ -- Micah Anderson <micah@riseup.net>  Mon, 11 Oct 2004 14:33:36 -0500
+
+backupninja (0.1-5) unstable; urgency=low
+
+  * Changed Recommends of rdiff-backup to Suggests after closer
+    reading of the differences.
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 10 Oct 2004 23:19:07 -0500
+
+backupninja (0.1-4) unstable; urgency=low
+
+  * Added dependency on php-xml-util and php-config now that I've made
+    these packages. I've also removed the README.Debian file which was
+    only used to describe how to install these things.
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 10 Oct 2004 22:48:30 -0500
+
+backupninja (0.1-3) unstable; urgency=low
+
+  * Added dependency on php4-pear
+  * Fixed installation of cronjob by removing dh_installcron and simply
+    installing the cronjob into cron.d
+  * Fixed incorrect creation of /etc/backup.d
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 10 Oct 2004 18:48:19 -0500
+
+backupninja (0.1-2) unstable; urgency=low
+
+  * Added Recommends for rdiff-backup
+  * Added dependency on logrotate
+  * Added text to the README.Debian to describe the necessary PEAR
+    installation, this will be removed before package is uploaded
+    because PEAR modules will be also uploaded at that time.
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 10 Oct 2004 18:34:01 -0500
+
+backupninja (0.1-1) unstable; urgency=low
+
+  * Installing cron via dh_installcron
+  * Installing example backup.d configuration files via dh_installexamples
+    so that they end up in /usr/share/doc/backupninja/examples
+  * Installing logrotate config via dh_installlogrotate
+  * Initial Release.
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 10 Oct 2004 15:27:39 -0500
+
