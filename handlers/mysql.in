@@ -88,8 +88,7 @@ if [ "$dbusername" != "" -a "$dbpassword" != "" ]
 then
     if [ $usevserver = yes ]
     then
-    	vhome=`$VSERVER $vsname exec getent passwd "root" | @AWK@ -F: '{print $6}'`
-	home="$vroot$vhome"
+    	home=`$VSERVER $vsname exec getent passwd "root" | @AWK@ -F: '{print $6}'`
     else
     	home=`getent passwd "root" | @AWK@ -F: '{print $6}'`
     fi
@@ -97,18 +96,25 @@ then
     [ -d $home ] || fatal "Can't find root's home directory ($home)."
     
     mycnf="$home/.my.cnf"
-    
-    if [ -f $mycnf ]
+
+    if [ $usevserver = yes ]
     then
-	# rename temporarily
-	tmpcnf="$home/my.cnf.disable"
-	debug "mv $mycnf $tmpcnf"
-	mv $mycnf $tmpcnf
+      workcnf="$vroot$mycnf"
+    else
+      workcnf="$mycnf"
+    fi
+
+    if [ -f $workcnf ]
+    then
+      # rename temporarily
+      tmpcnf="$workcnf.disable"
+      debug "mv $workcnf $tmpcnf"
+      mv $workcnf $tmpcnf
     fi
     
     oldmask=`umask`
     umask 077
-    cat > $mycnf <<EOF
+    cat > $workcnf <<EOF
 # auto generated backupninja mysql conf
 [mysql]
 host=$dbhost
@@ -124,14 +130,14 @@ password="$dbpassword"
 host=$dbhost
 user=$dbusername
 password="$dbpassword"
+
+[mysqladmin]
+host=$dbhost
+user=$dbusername
+password="$dbpassword"
 EOF
 	umask $oldmask
-	if [ $usevserver = yes ] 
-	then
-	    defaultsfile="--defaults-extra-file=$vhome/.my.cnf"
-	else
-	    defaultsfile="--defaults-extra-file=$mycnf"
-	fi
+	defaultsfile="--defaults-extra-file=$mycnf"
 fi
 
 # if a user is not set, use $configfile, otherwise use $mycnf
@@ -142,22 +148,23 @@ else
 	userset=true;
 	if [ $usevserver = yes ]
 	then
-	    vuserhome=`$VSERVER $vsname exec getent passwd "$user" | @AWK@ -F: '{print $6}'`
+	    userhome=`$VSERVER $vsname exec getent passwd "$user" | @AWK@ -F: '{print $6}'`
 	    if [ $? -eq 2 ]
 	    then
 	    	fatal "User $user not found in /etc/passwd"
 	    fi
-    	    userhome="$vroot$vuserhome"
+	    debug "User home set to: $vroot$userhome"
+	    [ -f $vroot$userhome/.my.cnf ] || fatal "Can't find config file in $userhome/.my.cnf"
 	else
 	    userhome=`getent passwd "$user" | @AWK@ -F: '{print $6}'`
 	    if [ $? -eq 2 ]
 	    then
 	    	fatal "User $user not found in /etc/passwd"
 	    fi
-       	fi
+	    debug "User home set to: $userhome"
+	    [ -f $userhome/.my.cnf ] || fatal "Can't find config file in $userhome/.my.cnf"
+	fi
 	
-	debug "User home set to: $userhome"
-	[ -f $userhome/.my.cnf ] || fatal "Can't find config file in $userhome/.my.cnf"
 	defaultsfile="--defaults-extra-file=$userhome/.my.cnf"
 	debug "using $defaultsfile"
 fi
@@ -307,12 +314,12 @@ fi
 if [ "$dbusername" != "" -a "$dbpassword" != "" ]
 then
 	## clean up tmp config file
-	debug "rm $mycnf"
-	rm $mycnf
+	debug "rm $workcnf"
+	rm $workcnf
 	if [ -f "$tmpcnf" ]
 	then
-		debug "mv $tmpcnf $mycnf"
-		mv $tmpcnf $mycnf
+		debug "mv $tmpcnf $workcnf"
+		mv $tmpcnf $workcnf
 	fi
 fi
 
