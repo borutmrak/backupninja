@@ -88,7 +88,7 @@ if [ "$dbusername" != "" -a "$dbpassword" != "" ]
 then
     if [ $usevserver = yes ]
     then
-    	home=`$VSERVER $vsname exec getent passwd "root" | @AWK@ -F: '{print $6}'`
+	home=`$VSERVER $vsname exec getent passwd "root" | @AWK@ -F: '{print $6}'`
     else
     	home=`getent passwd "root" | @AWK@ -F: '{print $6}'`
     fi
