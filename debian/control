@@ -5,8 +5,8 @@ Maintainer: Micah Anderson <micah@riseup.net>
 Build-Depends: debhelper (>= 4.0.0), autoconf, automake
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.8.0
-Homepage: http://code.autistici.org/trac/backupninja
-Vcs-Svn: http://code.autistici.org/trac/backupninja/browser
+Homepage: https://labs.riseup.net/code/projects/show/backupninja
+Vcs-Git: git://labs.riseup.net/backupninja.git
 
 Package: backupninja
 Architecture: all
