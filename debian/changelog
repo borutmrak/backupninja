@@ -1,7 +1,7 @@
 backupninja (0.9.6-5) UNRELEASED; urgency=low
 
   * Fixed upstream homepage and VCS in debian/control (Closes: #525318)
-  * 
+  * Brought back the desturl options to the dup handler (Closes: #534592)
 
  -- Micah Anderson <micah@riseup.net>  Sun, 24 May 2009 17:10:17 -0400
 

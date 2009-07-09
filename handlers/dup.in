@@ -1,4 +1,5 @@
 # -*- mode: sh; sh-basic-offset: 3; indent-tabs-mode: nil; -*-
+# vim: set filetype=sh sw=3 sts=3 expandtab autoindent:
 #
 # duplicity script for backupninja
 # requires duplicity
@@ -24,6 +25,7 @@ getconf exclude
 setsection dest
 getconf incremental yes
 getconf keep 60
+getconf desturl
 getconf sshoptions
 getconf bandwidthlimit 0
 getconf desthost
@@ -33,8 +35,8 @@ destdir=${destdir%/}
 
 ### SANITY CHECKS ##############################################################
 
-[ -n "$destdir" ]  || fatal "Destination directory not set"
-[ -n "$include" ]  || fatal "No source includes specified"
+[ -n "$desturl" -o -n "$destdir" ]  || fatal "The destination directory (destdir) must be set when desturl is not used."
+[ -n "$include" -o -n "$vsinclude" ]  || fatal "No source includes specified"
 [ -n "$password" ] || fatal "The password option must be set."
 
 ### VServers
@@ -58,13 +60,17 @@ fi
 
 ### See if we can login on $desthost
 if [ "$testconnect" == "yes" ]; then
-   debug "ssh $sshoptions -o PasswordAuthentication=no $desthost -l $destuser 'echo -n 1'"
-   if [ ! $test ]; then
-      result=`ssh $sshoptions -o PasswordAuthentication=no $desthost -l $destuser 'echo -n 1'`
-      if [ "$result" != "1" ]; then
-	 fatal "Can't connect to $desthost as $destuser."
-      else
-	 debug "Connected to $desthost as $destuser successfully"
+   if [ -n "$desturl" ]; then
+      warning 'testconnect can not be used when desturl is set'
+   else
+      debug "ssh $sshoptions -o PasswordAuthentication=no $desthost -l $destuser 'echo -n 1'"
+      if [ ! $test ]; then
+         result=`ssh $sshoptions -o PasswordAuthentication=no $desthost -l $destuser 'echo -n 1'`
+         if [ "$result" != "1" ]; then
+            fatal "Can't connect to $desthost as $destuser."
+         else
+            debug "Connected to $desthost as $destuser successfully"
+         fi
       fi
    fi
 fi
@@ -75,7 +81,14 @@ fi
 execstr_command=
 execstr_options="$options --no-print-statistics"
 execstr_source=
-execstr_serverpart="scp://$destuser@$desthost/$destdir"
+if [ -n "$desturl" ]; then
+   [ -z "$destuser" ] || warning 'the configured destuser is ignored since desturl is set'
+   [ -z "$desthost" ] || warning 'the configured desthost is ignored since desturl is set'
+   [ -z "$destdir" ] || warning 'the configured destdir is ignored since desturl is set'
+   execstr_serverpart="$desturl"
+else
+   execstr_serverpart="scp://$destuser@$desthost/$destdir"
+fi
 
 ### duplicity version
 duplicity_version="`duplicity --version | @AWK@ '{print $2}'`"
@@ -93,7 +106,10 @@ duplicity_sub="`echo $duplicity_version | @AWK@ -F '.' '{print $3}'`"
 #    --sftp-command ourselves
 
 scpoptions="$sshoptions"
-[ "$bandwidthlimit" == 0 ] || scpoptions="$scpoptions -l $bandwidthlimit"
+if [ "$bandwidthlimit" =! 0 ]; then
+   [ -z "$testurl" ] || warning 'The bandwidthlimit option is not used when desturl is set.'
+   scpoptions="$scpoptions -l $bandwidthlimit"
+fi
 
 # < 0.4.2 : only uses ssh and scp
 if [ "$duplicity_major" -le 0 -a "$duplicity_minor" -le 4 -a "$duplicity_sub" -lt 2 ]; then
@@ -137,7 +153,7 @@ fi
 # If incremental==no, force a full backup anyway.
 if [ "$incremental" == "no" ]; then
    # before 0.4.4, full was an option and not a command
-   if [ "$duplicity_major" -le 0 -a "$duplicity_minor" -le 4 -a "$duplicity_sub" -lt 4 ]; then   
+   if [ "$duplicity_major" -le 0 -a "$duplicity_minor" -le 4 -a "$duplicity_sub" -lt 4 ]; then
       execstr_options="${execstr_options} --full"
    else
       execstr_command="full"
@@ -151,6 +167,7 @@ if [ -n "$tmpdir" ]; then
       info "Temporary directory ($tmpdir) does not exist, creating it."
       mkdir -p "$tmpdir"
       [ $? -eq 0 ] || fatal "Could not create temporary directory ($tmpdir)."
+      chmod 0700 "$tmpdir"
    fi
    info "Using $tmpdir as TMPDIR"
    precmd="${precmd}TMPDIR=$tmpdir "
@@ -188,9 +205,9 @@ done
 if [ $usevserver = yes ]; then
    for vserver in $vsnames; do
       for vi in $vsinclude; do
-	 str="${vi//__star__/*}"
-	 str="$VROOTDIR/$vserver$str"
-	 execstr_source="${execstr_source} --include '$str'"
+         str="${vi//__star__/*}"
+         str="$VROOTDIR/$vserver$str"
+         execstr_source="${execstr_source} --include '$str'"
       done
    done
 fi
@@ -205,19 +222,19 @@ execstr_source=${execstr_source//\\*/\\\\\\*}
 
 # cleanup
 if [ "$duplicity_major" -ge 0 -a "$duplicity_minor" -ge 4 -a "$duplicity_sub" -ge 4 ]; then
-   debug "$precmd duplicity cleanup $execstr_options $execstr_serverpart"
+   debug "$precmd duplicity cleanup --force $execstr_options $execstr_serverpart"
    if [ ! $test ]; then
       export PASSPHRASE=$password
       output=`nice -n $nicelevel \
          su -c \
-         "$precmd duplicity cleanup $execstr_options $execstr_serverpart 2>&1"`
+         "$precmd duplicity cleanup --force $execstr_options $execstr_serverpart 2>&1"`
       exit_code=$?
       if [ $exit_code -eq 0 ]; then
-	 debug $output
-	 info "Duplicity cleanup finished successfully."
+         debug $output
+         info "Duplicity cleanup finished successfully."
       else
-	 debug $output
-	 warning "Duplicity cleanup failed."
+         debug $output
+         warning "Duplicity cleanup failed."
       fi
    fi
 fi
@@ -225,20 +242,20 @@ fi
 # remove-older-than
 if [ "$keep" != "yes" ]; then
    if [ "$duplicity_major" -ge 0 -a "$duplicity_minor" -ge 4 -a "$duplicity_sub" -ge 4 ]; then
-      debug "$precmd duplicity remove-older-than $keep $execstr_options $execstr_serverpart"
+      debug "$precmd duplicity remove-older-than $keep --force $execstr_options $execstr_serverpart"
       if [ ! $test ]; then
          export PASSPHRASE=$password
-	 output=`nice -n $nicelevel \
+         output=`nice -n $nicelevel \
                    su -c \
-                      "$precmd duplicity remove-older-than $keep $execstr_options $execstr_serverpart 2>&1"`
-	 exit_code=$?
-	 if [ $exit_code -eq 0 ]; then
-	    debug $output
-	    info "Duplicity remove-older-than finished successfully."
-	 else
-	    debug $output
-	    warning "Duplicity remove-older-than failed."
-	 fi
+                      "$precmd duplicity remove-older-than $keep --force $execstr_options $execstr_serverpart 2>&1"`
+         exit_code=$?
+         if [ $exit_code -eq 0 ]; then
+            debug $output
+            info "Duplicity remove-older-than finished successfully."
+         else
+            debug $output
+            warning "Duplicity remove-older-than failed."
+         fi
       fi
    fi
 fi
