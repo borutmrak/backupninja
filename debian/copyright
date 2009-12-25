@@ -1,11 +1,14 @@
 This was turned into a debian package by Micah Anderson <micah@riseup.net> on
 Sat, 18 Sep 2004 16:03:11 -0500.
 
-The upstream source was obtained from the Debian Grimoire located at
-http://dev.riseup.net the subversion project is located here:
-http://dev.riseup.net/websvn/listing.php?repname=backupninja&path=%2F&sc=0
-and was originally written by elijah@riseup.net, for a full list of authors
-see AUTHORS.
+The upstream source was obtained from
+https://labs.riseup.net/code/projects/list_files/backupninja.
+
+The Git repository can be viewed at
+https://labs.riseup.net/code/repositories/show/backupninja
+
+backupninja was originally written by elijah@riseup.net, for a full list of
+authors see AUTHORS.
 
 Copyright:
 
