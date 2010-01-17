@@ -1,3 +1,74 @@
+version 0.9.7 -- UNRELEASED
+    backupninja changes
+	 . fix bug in reportspace, thanks Dan Garthwaite
+	 . do not assume English locale when using date (Closes: #465837)
+	 . add 'when = manual' option, that can be used in the global config
+	   file or in a given backup action file. Thanks Tuomas Jormola for the
+	   preliminary patch (Closes: #511299)
+	 . new reportinfo option: when set, messages sent by handlers with
+	   "info" are included in the report e-mail (closes #563734)
+	 . reportspace: skip non-directories and places that don't exist on the
+	   local filesystem (Closes: #536049)
+	 . set BACKUPNINJA_DEBUG when invoked with -d (Closes: #537266)
+    lib changes
+	easydialog:
+	 . Allow form fields input to grow up to 100 chars (Closes: #562249)
+    handler changes
+	ldap:
+	 . Use gzip's --rsyncable option.
+	 . Use bash pipefail option when needed so that failed dumps are
+	   reported as such.
+	maildir:
+	 . fix location of deleted_on file
+	 . add missing destid_file options to ssh connections
+	 . added sshoptions variable for arbitrary ssh options
+	 . updated example file to include destid_file, destport and sshoptions
+	mysql:
+	 . Options passed to mysqldump are now customizable with the new
+	   sqldumpoptions configuration variable. Thanks to Chris Lamb for his
+	   preliminary patch (Closes: #502966)
+	 . Hide 'mysqladmin ping' output, to prevent confusing the user in
+	   case mysqld is running but the authentication fails, which apparently
+	   does not prevent mysqldump to work.
+	 . Fix the error message displayed when mysqld is not running:
+	   mysqladmin ping indeed returns 0 when authentication fails.
+	 . Use gzip's --rsyncable option.
+	 . Quote output filenames to support shell meta-characters in
+	   database names.
+	 . Use bash pipefail option when needed so that failed dumps are
+	   reported as such.
+	pgsql:
+	 . Use gzip's --rsyncable option.
+	 . Quote output filenames to support shell meta-characters in
+	   database names.
+	 . Use bash pipefail option when needed so that failed dumps are
+	   reported as such.
+	rdiff:
+	 . Fix include/exclude paths with spaces (Closes: #398435)
+	 . Fix confusing error if rdiff-backup cannot be found on remote server.
+	sys:
+	 . New luksheaders option (default=disabled) to backup the Luks header
+	   of every Luks device.
+	 . New lvm option (default=disabled) to backup LVM metadata for every
+	   detected volume group.
+	 . Backup dmsetup info as well, for easier restoring of Luks headers.
+	dup:
+	 . Fixed bandwidthlimit syntax error. Thanks to Ian Beckwith for
+	   the patch.
+	 . Send duplicity output to debug line by line instead of as a whole at
+	   one time (Closes: #536360)
+	 . Report duplicity output as "info" so that it can be included in
+	   report e-mail when reportinfo is on (Closes: #563734)
+	 . Fix include/exclude paths with spaces
+	 . Support backups to Amazon S3 buckets, thanks to stefan for the patch.
+    helper changes
+	dup:
+	 . Do not propose to exclude /home/*/.gnupg twice anymore
+	   (Closes: #563044)
+    autotools
+	 . Added the stat command to the automagically replaced ones, hoping it
+	   will help supporting *BSD some day.
+
 version 0.9.6 -- July 21, 2008
     backupninja changes
 	 . fix bug in cstream definition, thanks Jamie McClelland

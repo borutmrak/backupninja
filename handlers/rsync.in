@@ -1,12 +1,28 @@
+# -*- mode: sh; sh-basic-offset: 3; indent-tabs-mode: nil; -*-
+# vim: set filetype=sh sw=3 sts=3 expandtab autoindent:
 #
-# backupninja handler to do incremental backups using
-# rsync and hardlinks, based on
+# backupninja handler for incremental backups using rsync and hardlinks
+# feedback: rhatto at riseup.net
+#
+#  rsync handler is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License as published by the Free
+#  Software Foundation; either version 2 of the License, or any later version.
+#
+#  rsync handler is distributed in the hope that it will be useful, but WITHOUT
+#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+#  more details.
+#
+#  You should have received a copy of the GNU General Public License along with
+#  this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+#  Place - Suite 330, Boston, MA 02111-1307, USA
+#
+# Inspiration
+# -----------
 #
 #  - http://www.mikerubel.org/computers/rsync_snapshots/
 #  - rsnap handler by paulv at bikkel.org
 #  - maildir handler from backupninja
-#
-# feedback: rhatto at riseup.net | gpl
 #
 # Config file options
 # -------------------
@@ -292,7 +308,7 @@ function rotate_short {
   local keep="$2"
   local metadata="`dirname $folder`/metadata"
 
-  if [[ "$keep" < 4 ]]; then
+  if [[ "$keep" -lt 4 ]]; then
     error "Rotate: minimum of 4 rotations"
     exit 1
   fi
@@ -327,7 +343,7 @@ function rotate_short_remote {
   local metadata="`dirname $folder`/metadata"
   local keep="$2"
 
-  if [[ "$2" < 4 ]]; then
+  if [[ "$2" -lt 4 ]]; then
     error "Rotate: minimum of 4 rotations"
     exit 1
   fi
