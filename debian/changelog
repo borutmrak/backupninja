@@ -1,5 +1,6 @@
-backupninja (0.9.6-5) UNRELEASED; urgency=low
+backupninja (0.9.7-1) UNRELEASED; urgency=low
 
+  * Install rsync and maildir examples (Closes: #566703)
   * Fixed upstream homepage and VCS in debian/control (Closes: #525318)
   * Brought back the desturl options to the dup handler (Closes: #534592)
   * Fixed upstream homepage and VCS in debian/copyright
