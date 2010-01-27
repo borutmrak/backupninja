@@ -7,7 +7,7 @@ backupninja (0.9.7-1) unstable; urgency=low
   * Brought back the desturl options to the dup handler (Closes: #534592)
   * Fixed upstream homepage and VCS in debian/copyright
 
- -- Micah Anderson <micah@riseup.net>  Sun, 24 May 2009 17:10:17 -0400
+ -- Micah Anderson <micah@riseup.net>  Wed, 27 Jan 2010 18:20:39 -0500
 
 backupninja (0.9.6-4) unstable; urgency=low
 
