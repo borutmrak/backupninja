@@ -10,7 +10,7 @@ Vcs-Git: git://labs.riseup.net/backupninja.git
 
 Package: backupninja
 Architecture: all
-Depends: gawk | mawk, dialog, bash (>=2.05b-26), bsd-mailx | mailx | mailutils
+Depends: gawk | mawk, dialog, bash (>=2.05b-26), bsd-mailx | mailx | mailutils, ${misc:Depends}
 Suggests: rdiff-backup, hwinfo, genisoimage, wodim, cdrdao, dvd+rw-tools, debconf-utils, mdadm
 Description: lightweight, extensible meta-backup system
  Backupninja lets you drop simple config files in /etc/backup.d to
