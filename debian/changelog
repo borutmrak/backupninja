@@ -1,4 +1,4 @@
-backupninja (0.9.7-1) unstable; urgency=low
+backupninja (0.9.7-1) experimental; urgency=low
 
   * Add dependency possibility on bsd-mailx for mailx transition
   * Bump standards version to 3.8.3 (no changes)
@@ -6,7 +6,36 @@ backupninja (0.9.7-1) unstable; urgency=low
   * Fixed upstream homepage and VCS in debian/control (Closes: #525318)
   * Brought back the desturl options to the dup handler (Closes: #534592)
   * Fixed upstream homepage and VCS in debian/copyright
-
+  * New upstream release
+    . use gzip's --resyncable option
+    . add bash pipefail option so backups fail more reliably
+    . fix location of maildir deleted_on file
+    . add missing destid_file options to maildir ssh conntions
+    . added sshoptions variable for arbitrary ssh options
+    . updated example file to include destid_file, destport and sshoptions
+    . use any subdirectories for maildir (not just "a" to "z")
+    . hide mysql ping output to prevent confusion
+    . fix mysql error message when it is not running
+    . quote output filenames for shell meta-characters in database names
+    . do not assume English locale when using date (Closes: #465837)
+    . add 'when = manual' option, thanks Tuomas Jormola (Closes: #511299)
+    . new reportinfo option to include in email (Closes: #563734)
+    . fix reportspace to skip non-directories (Closes: #536049)
+    . set BACKUPNINJA_DEBUG when invoked with -d (Closes: #537266)
+    . allow form fields input to grow up to 100 chars (Closes: #562249)    
+    . customizable mysqldump options, thanks Chris Lamb! (Closes: #502966)
+    . fix rdiff-backup include/exclude paths with spaces (Closes: #398435)
+    . fix confusing error if rdiff-backup cant be found on remote server
+    . increased element number in includes/excludes in ninjahelper
+    . add luksheaders option (default=disabled) to backup the LUKS header
+    . add lvm option (default=disabled) to backup LVM metadata for LVM VGs
+    . backup dmsetup info, for easier restoring of LUKS headers
+    . fixed bandwidthlimit syntax erro, thanks Ian Beckwith!
+    . send duplicity debug output line-by-line instead (Closes: #536360)
+    . duplicity output now "info" so reportinfo can include (Closes: #563734)
+    . do not propose to exclude /home/*/.gnupg twice anymore (Closes: #563044)
+    . add support for Amazon S3 buckets, thanks Stefan!
+  
  -- Micah Anderson <micah@riseup.net>  Wed, 27 Jan 2010 18:20:39 -0500
 
 backupninja (0.9.6-4) unstable; urgency=low
