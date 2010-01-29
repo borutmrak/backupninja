@@ -49,4 +49,3 @@
 ## tls (default yes): if set to 'yes' then TLS connection will be
 ## attempted to your ldaphost by using the URI base ldaps: otherwise ldap: will be used
 # tls = yes
-
