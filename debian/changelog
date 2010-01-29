@@ -2,7 +2,7 @@ backupninja (0.9.7-2) experimental; urgency=low
 
   * Fix FTBFS by chmod +x configure and update clean target
 
- --
+ -- Micah Anderson <micah@debian.org>  Fri, 29 Jan 2010 11:55:42 -0500
 
 backupninja (0.9.7-1) experimental; urgency=low
 
