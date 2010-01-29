@@ -1,6 +1,6 @@
 backupninja (0.9.7-2) experimental; urgency=low
 
-  * Fix FTBFS by chmod +x configure
+  * Fix FTBFS by chmod +x configure and update clean target
 
  --
 

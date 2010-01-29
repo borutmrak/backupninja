@@ -34,6 +34,11 @@ build-stamp: configure-stamp
 	touch build-stamp
 
 clean:
+	# set config.sub and config.guess back to how they are in orig tarball
+	# so dpkg-source will work (diff.gz considers a change to a symlink an
+	# "unrepresentable change to source", so we need to undo what is done
+	# in the configure-stamp target
+	rm -f config.sub config.guess
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
