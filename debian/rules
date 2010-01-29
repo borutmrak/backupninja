@@ -21,6 +21,7 @@ configure-stamp:
 	rm -f config.sub config.guess
 	ln -sf /usr/share/misc/config.sub config.sub
 	ln -sf /usr/share/misc/config.guess config.guess
+	chmod +x configure
 	./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --mandir=/usr/share/man
 	touch configure-stamp
 

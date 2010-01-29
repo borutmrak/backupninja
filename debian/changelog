@@ -1,3 +1,9 @@
+backupninja (0.9.7-2) experimental; urgency=low
+
+  * Fix FTBFS by chmod +x configure
+
+ --
+
 backupninja (0.9.7-1) experimental; urgency=low
 
   * Add dependency possibility on bsd-mailx for mailx transition
