@@ -1,3 +1,9 @@
+backupninja (0.9.7-4) unstable; urgency=low
+
+  * Upload experimental package to unstable
+
+ -- Micah Anderson <micah@riseup.net>  Fri, 26 Feb 2010 23:44:25 -0500
+
 backupninja (0.9.7-4) experimental; urgency=low
 
   * Fix bad upstream merge
