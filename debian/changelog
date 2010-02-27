@@ -1,6 +1,7 @@
-backupninja (0.9.7-4) unstable; urgency=low
+backupninja (0.9.7-5) unstable; urgency=low
 
   * Upload experimental package to unstable
+  * Bump Standards version: no changes
 
  -- Micah Anderson <micah@riseup.net>  Fri, 26 Feb 2010 23:44:25 -0500
 
