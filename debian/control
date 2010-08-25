@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Micah Anderson <micah@riseup.net>
 Build-Depends: debhelper (>= 5.0.0), autoconf, automake
 Build-Conflicts: autoconf2.13
-Standards-Version: 3.8.4
+Standards-Version: 3.9.1
 Homepage: https://labs.riseup.net/code/projects/show/backupninja
 Vcs-Git: git://labs.riseup.net/backupninja.git
 
