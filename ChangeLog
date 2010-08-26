@@ -1,3 +1,39 @@
+version 0.9.8 -- UNRELEASED
+    backupninja changes
+	 . Added GZIP_OPTS option, defaulting to --rsyncable, so that this
+	   option can be disabled on systems that don't support it. This
+	   also allows to use another compression program, such as pbzip2
+	   on SMP machines (Closes Roundup bug #2405)
+    handler changes
+	sys:
+	 . Only run mdadm if RAID devices actually exist (Closes: #572450)
+	dup:
+	 . Now default to use --full-if-older-than; see the new "increments"
+	   option to opt-out or tweak the default (30D) delay between full
+	   backups. Thanks a lot to Olivier Berger (Closes: #535996)
+	 . Use duplicity's --extra-clean option to get rid of unnecessary old
+	   cache files when cleaning up. This is enabled when using duplicity
+	   0.6.01 or newer, that depends on local caching (Closes: #572721)
+	 . Ignore anything but digits and "." when comparing versions
+	   (Closes: #578987)
+	 . Put archive directory (cache) into /var/cache/backupninja/duplicity
+	   rather than the default /root/.cache/duplicity, unless the user
+	   has specified it (Closes: 580213)
+	 . Better example.dup documentation. Thanks, Alster!
+	 . Added ftp_password option to securely transmit the FTP password
+	   from backupninja to duplicity.
+	mysql:
+	 . Don't lock tables in the information_schema database
+	   (Closes: #587011)
+	 . Fix code logic to make dbusername/dbpassword actually usable
+	   (Closes Redmine bug #2264)
+    doc changes
+	manpage:
+	 . Fix typo in manpage (Closes: #583778)
+	ldap:
+	 . Add ssl option description, fix tls option description (Closes
+	   Roundup bug #2407)
+
 version 0.9.7 -- January 27, 2010
     backupninja changes
 	 . fix bug in reportspace, thanks Dan Garthwaite

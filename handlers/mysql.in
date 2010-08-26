@@ -86,7 +86,7 @@ fi
 
 defaultsfile=""
 
-if [ "$dbusername" != "" -a "$dbpassword" != "" ]
+if [ -n "$dbusername" -a -n "$dbpassword" ]
 then
    if [ $usevserver = yes ]
    then
@@ -140,13 +140,10 @@ password="$dbpassword"
 EOF
    umask $oldmask
    defaultsfile="--defaults-extra-file=$mycnf"
-fi
 
-# if a user is not set, use $configfile, otherwise use $mycnf
-if [ "$user" == "" ]; then
-   user=root;
-   defaultsfile="--defaults-extra-file=$configfile"
-else
+# else, if a user is set use her .my.cnf
+elif [ -n "$user" ]
+then
    userset=true;
    if [ $usevserver = yes ]
    then
@@ -169,6 +166,10 @@ else
 	
    defaultsfile="--defaults-extra-file=$userhome/.my.cnf"
    debug "using $defaultsfile"
+# otherwise use $configfile
+else
+   user=root
+   defaultsfile="--defaults-extra-file=$configfile"
 fi
 
 #######################################################################
@@ -255,6 +256,10 @@ then
    for db in $databases
    do
       DUMP_BASE="$MYSQLDUMP $defaultsfile $sqldumpoptions"
+      if [ "$db" = "information_schema" ]
+      then
+         DUMP_BASE="${DUMP_BASE} --skip-lock-tables"
+      fi
 
       # Dumping structure and data
       DUMP="$DUMP_BASE $ignore $db"
@@ -279,7 +284,7 @@ then
             fatal "mysqld doesn't appear to be running!"
          fi
          if [ "$compress" == "yes" ]; then
-            execstr="$VSERVER $vsname exec $DUMP | $GZIP --rsyncable > '$vroot$dumpdir/${db}.sql.gz'"
+            execstr="$VSERVER $vsname exec $DUMP | $GZIP $GZIP_OPTS > '$vroot$dumpdir/${db}.sql.gz'"
          else
             execstr="$VSERVER $vsname exec $DUMP -r '$vroot$dumpdir/${db}.sql'"
          fi
@@ -290,7 +295,7 @@ then
             fatal "mysqld doesn't appear to be running!"
          fi
          if [ "$compress" == "yes" ]; then
-            execstr="$DUMP | $GZIP --rsyncable > '$dumpdir/${db}.sql.gz'"
+            execstr="$DUMP | $GZIP $GZIP_OPTS > '$dumpdir/${db}.sql.gz'"
          else
             execstr="$DUMP -r '$dumpdir/${db}.sql'"
          fi

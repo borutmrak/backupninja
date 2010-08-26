@@ -123,6 +123,7 @@ do_dup_dest() {
         formItem "destdir" "$dup_destdir"
         formItem "keep" "$dup_keep"
         formItem "incremental" "$dup_incremental"
+        formItem "increments" "$dup_increments"
         formItem "bandwidthlimit" "$dup_bandwidth"
         formItem "sshoptions" "$dup_sshoptions"
       formDisplay
@@ -139,8 +140,9 @@ do_dup_dest() {
       dup_destdir=${thereply[2]}
       dup_keep=${thereply[3]}
       dup_incremental=${thereply[4]}
-      dup_bandwidth=${thereply[5]}
-      dup_sshoptions=${thereply[6]}
+      dup_increments=${thereply[5]}
+      dup_bandwidth=${thereply[6]}
+      dup_sshoptions=${thereply[7]}
 
    done
    set +o noglob
@@ -278,7 +280,8 @@ options = $dup_options
 # default is 0, but set to 19 if you want to lower the priority.
 nicelevel = $dup_nicelevel
 
-# default is yes. set to no to skip the test if the remote host is alive
+# default is yes. set to no to skip the test if the remote host is alive.
+# if 'desturl' is set below, 'testconnect' must be set to 'no' for now.
 testconnect = $dup_testconnect
 
 ######################################################
@@ -406,6 +409,14 @@ EOF
 # if incremental = no, perform a full backup in order to start a new backup set
 incremental = $dup_incremental
 
+# how many days of incremental backups before doing a full backup again ;
+# default is 30 days (one can also use the time format of duplicity).
+# if increments = keep, never automatically perform a new full backup ; 
+# only perform incremental backups.
+#increments = 30
+#increments = keep
+increments = $dup_increments
+
 # how many days of data to keep ; default is 60 days.
 # (you can also use the time format of duplicity)
 # 'keep = yes' means : do not delete old data, the remote host will take care of this
@@ -419,13 +430,19 @@ keep = $dup_keep
 #desturl = file:///usr/local/backup
 #desturl = rsync://user@other.host//var/backup/bla
 #desturl = s3+http://your_bucket
+#desturl = ftp://myftpuser@ftp.example.org/remote/ftp/path
 
 # Amazon Web Services Access Key ID and Secret Access Key, needed for backups
 # to S3 buckets.
 #awsaccesskeyid = YOUR_AWS_ACCESS_KEY_ID
 #awssecretaccesskey = YOUR_AWS_SECRET_KEY
 
+# FTP password, needed for backups using desturl = ftp://...
+#ftp_password = 
+
 # bandwith limit, in kbit/s ; default is 0, i.e. no limit
+# if using 'desturl' above, 'bandwidthlimit' must not be set
+# an example setting of 128 kbps would be:
 #bandwidthlimit = 128
 bandwidthlimit = $dup_bandwidth
 
@@ -435,15 +452,20 @@ bandwidthlimit = $dup_bandwidth
 #sshoptions = -o IdentityFile=/root/.ssh/id_dsa_duplicity
 sshoptions = $dup_sshoptions
 
-# put the backups under this directory
+# put the backups under this destination directory
+# if using 'desturl' above, this must not be set
+# in all other cases, this must be set!
 destdir = $dup_destdir
 
 # the machine which will receive the backups
+# if using 'desturl' above, this must not be set
+# in all other cases, this must be set!
 desthost = $dup_desthost
 
 # make the files owned by this user
-# note: you must be able to ssh backupuser@backhost
-# without specifying a password (if type = remote).
+# if using 'desturl' above, this must not be set
+# note: if using an SSH based transport and 'type' is set to 'remote', you must
+#       be able to 'ssh backupuser@backuphost' without specifying a password.
 destuser = $dup_destuser
 
 EOF
@@ -510,6 +532,7 @@ dup_wizard() {
    dup_excludes=
    dup_vsincludes=
    dup_incremental=yes
+   dup_increments=30
    dup_keep=60
    dup_bandwidth=
    dup_sshoptions=
@@ -529,7 +552,7 @@ dup_wizard() {
    # Global variables whose '*' shall not be expanded
    set -o noglob
    dup_default_includes="/var/spool/cron/crontabs /var/backups /etc /root /home /usr/local/*bin /var/lib/dpkg/status*"
-   dup_default_excludes="/home/*/.gnupg /home/*/.local/share/Trash /home/*/.Trash /home/*/.thumbnails /home/*/.beagle /home/*/.aMule /home/*/gtk-gnutella-downloads"
+   dup_default_excludes="/home/*/.gnupg /home/*/.local/share/Trash /home/*/.Trash /home/*/.thumbnails /home/*/.beagle /home/*/.aMule /home/*/gtk-gnutella-downloads /var/cache/backupninja/duplicity"
    set +o noglob
 
    dup_main_menu

@@ -19,7 +19,8 @@
 ## Default:
 # nicelevel = 0
 
-## test the connection? set to no to skip the test if the remote host is alive
+## test the connection? set to no to skip the test if the remote host is alive.
+## if 'desturl' is set below, 'testconnect' must be set to 'no' for now.
 ##
 ## Default:
 # testconnect = yes
@@ -134,6 +135,7 @@ include = /var/lib/dpkg/status-old
 
 # files to exclude from the backup
 exclude = /home/*/.gnupg
+exclude = /var/cache/backupninja/duplicity
 
 ######################################################
 ## destination section
@@ -146,6 +148,14 @@ exclude = /home/*/.gnupg
 ##
 ## Default: 
 # incremental = yes
+
+## how many days of incremental backups before doing a full backup again ;
+## default is 30 days (one can also use the time format of duplicity).
+## if increments = keep, never automatically perform a new full backup ; 
+## only perform incremental backups.
+##
+## Default:
+# increments = 30
 
 ## how many days of data to keep ; default is 60 days.
 ## (you can also use the time format of duplicity)
@@ -161,6 +171,7 @@ exclude = /home/*/.gnupg
 ## desturl = file:///usr/local/backup
 ## desturl = rsync://user@other.host//var/backup/bla
 ## desturl = s3+http://
+## desturl = ftp://myftpuser@ftp.example.org/remote/ftp/path
 ## the default value of this configuration option is not set:
 ##
 ## Default:
@@ -175,8 +186,14 @@ exclude = /home/*/.gnupg
 # awsaccesskeyid = 
 # awssecretaccesskey = 
 
-## bandwith limit, in kbit/s ; default is 0, i.e. no limit an example
-## setting would be:
+## FTP password, needed for backups using desturl = ftp://...
+##
+## Default:
+# ftp_password = 
+
+## bandwith limit, in kbit/s ; default is 0, i.e. no limit
+## if using 'desturl' above, 'bandwidthlimit' must not be set
+## an example setting of 128 kbps would be:
 ## bandwidthlimit = 128
 ##
 ## Default:
@@ -191,14 +208,18 @@ exclude = /home/*/.gnupg
 ## Default:
 # sshoptions = 
 
-## put the backups under this directory, this must be set!
+## put the backups under this destination directory
+## if using 'desturl' above, this must not be set
+## in all other cases, this must be set!
 ## an example setting would be:
 ## destdir = /backups
 ## 
 ## Default:
 # destdir = 
 
-## the machine which will receive the backups, this must be set!
+## the machine which will receive the backups
+## if using 'desturl' above, this must not be set
+## in all other cases, this must be set!
 ## an example setting would be:
 ## desthost = backuphost
 ## 
@@ -206,12 +227,11 @@ exclude = /home/*/.gnupg
 # desthost = 
 
 ## make the files owned by this user
-## note: you must be able to ssh backupuser@backhost
-## without specifying a password (if type = remote).
+## if using 'desturl' above, this must not be set
+## note: if using an SSH based transport and 'type' is set to 'remote', you must
+##       be able to 'ssh backupuser@backuphost' without specifying a password.
 ## an example setting would be:
 ## destuser = backupuser
 ##
 ## Default:
 # destuser =
-
-
