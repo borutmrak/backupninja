@@ -1,3 +1,29 @@
+backupninja (0.9.8-1) unstable; urgency=low
+
+  * Bump Standards version: no changes
+  * New upstream release
+    . only run mdadm if RAID devices actually exist (Closes: #572450)
+    . duplicity handler now defaults to use --full-if-older-than
+      (Closes: #572523, #535996)
+    . duplicy handler now gets rid of unnecessary old cache files
+      (Closes: #572721)
+    . fix duplicity version comparison (Closes: #578987)
+    . duplicity now uses /var/cache/backupninja/duplicity as a cache
+      directory (Closes: #580016)
+    . allow to securely transmit the FTP password from backupninja to
+      duplicity (closes an unreported security issue)
+    . mysql handler does not lock tables in the information_schema
+      database anymore (Closes: #587011)
+    . mysql dbusername/dbpassword options are now actually usable
+    . include the rsync handler (Closes: #515108)
+    . prevents multiple instances of the same rsync job to run in
+      parallel
+    . avoid passing the remote user twice to rsync-over-ssh
+    . documentation improvements (Closes: #583778)
+    . support systems that lack gzip's --rsyncable option
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 12 Sep 2010 19:58:49 +0200
+
 backupninja (0.9.7-5) unstable; urgency=low
 
   * Upload experimental package to unstable
