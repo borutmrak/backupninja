@@ -101,22 +101,6 @@
 # You dont need to manually specify vservers using "include = /vservers".
 # They are automatically backuped if vserver is set to "yes" on you backupninja.conf.
 #
-# Changelog
-# ---------
-# 
-# 20090329 - rhatto at riseup.net
-#
-#   - Added support for: 
-#     - Remote destinations
-#     - Long rotation format similar to maildir handler
-#     - Batch files through --read-batch and --write-batch
-#     - Custom file list using --files-from
-#     - SSH persistent connection using ControlMaster
-#     - The rsync:// protocol
-#   - Metadata folder for each backup folder
-#   - General refactoring
-#   - Code cleanup
-#
 
 # function definitions
 
@@ -279,7 +263,8 @@ function eval_config {
     nice=""
   fi
 
-  ssh_cmd="ssh -T -o PasswordAuthentication=no $host -p $port -l $user -i $id_file"
+  ssh_cmd_base="ssh -T -o PasswordAuthentication=no -p $port -i $id_file"
+  ssh_cmd="$ssh_cmd_base $user@$host"
 
   if [ "$from" == "remote" ] || [ "$dest" == "remote" ]; then
     if [ "$testconnect" == "yes" ] && [ "$protocol" == "ssh" ]; then
@@ -846,7 +831,12 @@ function test_connect {
 function set_lockfile {
 
   if [ ! -z "$lockfile" ]; then
-    $touch $lockfile || warning "Could not create lockfile $lockfile"
+    mkdir -p `dirname $lockfile`
+    if ( set -o noclobber; echo "$$" > "$lockfile" ) &> /dev/null; then
+      trap 'unset_lockfile' INT TERM EXIT
+    else
+      fatal "Could not create lockfile $lockfile, exiting"
+    fi
   fi
 
 }
@@ -854,7 +844,25 @@ function set_lockfile {
 function unset_lockfile {
 
   if [ ! -z "$lockfile" ]; then
-    $rm $lockfile || warning "Could not remove lockfile $lockfile"
+    $rm -f $lockfile || warning "Could not remove lockfile $lockfile"
+  fi
+
+}
+
+function check_lockfile {
+
+  local pid process
+
+  if [ ! -z "$lockfile" ] && [ -f "$lockfile" ]; then
+    pid="`cat $lockfile`"
+    process="`ps --no-headers -o comm $pid`"
+    if [ "$?" == "0" ] && [ "`ps --no-headers -o comm $$`" == "$process" ]; then
+      info "Another backup is running for $lockfile, skipping run"
+      exit
+    else
+      info "Found old lockfile $lockfile, removing it"
+      unset_lockfile  
+    fi
   fi
 
 }
@@ -911,9 +919,9 @@ function set_rsync_options {
         fatal "SSH Identity file $id_file not found"
         exit 1
       else
-        debug RSYNC_RSH=\"$ssh_cmd\"
-        echo RSYNC_RSH=\"$ssh_cmd\" >> $log
-        RSYNC_RSH="$ssh_cmd"
+        debug RSYNC_RSH=\"$ssh_cmd_base\"
+        echo RSYNC_RSH=\"$ssh_cmd_base\" >> $log
+        export RSYNC_RSH="$ssh_cmd_base"
       fi
     fi
 
@@ -1044,6 +1052,7 @@ function end_mux {
 # the backup procedure
 
 eval_config
+check_lockfile
 set_lockfile
 set_rsync_options
 start_mux
@@ -1062,7 +1071,7 @@ for SECTION in $include; do
 
   info "Syncing $SECTION on $dest_path..."
   debug $nice $rsync "${rsync_options[@]}" $filelist_flag $excludes $batch_option $orig $dest_path
-  $nice $rsync "${rsync_options[@]}" $filelist_flag $excludes $batch_option $orig $dest_path >> $log
+  $nice $rsync "${rsync_options[@]}" $filelist_flag $excludes $batch_option $orig $dest_path | tee -a $log
 
   if [ "$?" != "0" ]; then
     warning "Rsync error when trying to transfer $SECTION"
