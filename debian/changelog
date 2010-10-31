@@ -1,3 +1,11 @@
+backupninja (0.9.8.1-1) unstable; urgency=low
+
+  * Do not error out when no job is configured. Thanks to Jordi Mallach
+    <jordi@debian.org> for the patch (Closes: #597684)
+  * Fix vgcfgbackup support for Debian in sys handler
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 31 Oct 2010 16:48:44 -0400
+
 backupninja (0.9.8-1) unstable; urgency=low
 
   * Bump Standards version: no changes
