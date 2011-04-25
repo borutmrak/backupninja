@@ -1,0 +1,4 @@
+version=3
+https://labs.riseup.net/code/projects/backupninja/files \
+  /code/attachments/download/[^/]+/backupninja[-_]([0-9.]+).*\.tar\.gz
+
