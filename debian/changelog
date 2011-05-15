@@ -1,3 +1,32 @@
+backupninja (0.9.9-1) UNRELEASED; urgency=low
+
+  * New upstream release
+    . Use locking to avoid running concurrent instances of the same
+      backup action. (Closes: #511300)
+    . Stop using "local VAR" outside functions. (Closes: #530647)
+    . Fix duplicity TMPDIR vs. --tempdir usage.
+    . Remove support for duplicity < 0.4.4. Even etch-backports has
+      a newer one.
+    . Now support remove-all-inc-but-n-full command for duplicity >=
+      0.9.10 to allow removal of increments for older full backups.
+      (Closes: #603478)
+    . Fix reliance on bash for pipefail in ldap, mysql and postgresql
+      handlers. (Closes: #602374)
+    . Support various PostgreSQL dump formats in addition to pg_dumpall.
+    . Support reading rdiff include/exclude patterns from files.
+    . Fix long rsync rotation.
+    . Make usage of units clearer everywhere needed.
+    . Do arithmetic using bash rather than bc in rsync handler
+      (Closes: #603173)
+    . Fix hwinfo and gathering of information about loaded modules in
+      sys handler.
+    . Install tar handler and helper.
+    . Support separate signing key in Duplicity helper.
+    . Generate 4096 bits RSA keys, recommend doing so in the
+      documentation.
+
+ -- Micah Anderson <micah@riseup.net>  Sun, 15 May 2011 19:40:34 +0200
+
 backupninja (0.9.8.1-1) unstable; urgency=low
 
   * Do not error out when no job is configured. Thanks to Jordi Mallach
