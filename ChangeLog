@@ -1,7 +1,63 @@
+version 0.9.9 -- May 15, 2011
+    backupninja changes
+	 . Use locking to avoid running concurrent instances of the same backup
+	   action. Thanks to Olivier Berger <oberger@ouvaton.org> for the patch.
+	   (Closes: #511300)
+    handler changes
+	all handlers:
+	 . Stop using "local VAR" outside functions. (Closes: #530647)
+	dup:
+	 . Use --tempdir option rather than TMPDIR environment variable.
+	   (Closes Roundup bug #598)
+	 . Remove support for duplicity < 0.4.4. Even etch-backports has
+	   a newer one.
+   	 . Now support remove-all-inc-but-n-full command for duplicity >=
+	   0.9.10 to allow removal of increments for older full backups.
+	   Thanks to Olivier Berger <oberger@ouvaton.org> for the patch.
+	   (Closes Redmine bug #2492)
+	   (Closes: #603478)
+	ldap:
+	 . Fix reliance on bash for pipefail.
+	mysql:
+	 . Fix reliance on bash for pipefail.
+	   Thanks to Sergio Talens-Oliag <sto@debian.org> for the patch.
+	   (Closes: #602374)
+	postgresql:
+	 . Support various pg_dump formats in addition to pg_dumpall.
+	   Thanks to Jacob Anawalt <jlanawalt@gmail.com> for the patch.
+	   (Closes Roundup bug #2534)
+	 . Fix reliance on bash for pipefail.
+	rdiff:
+	 . Support reading include/exclude patterns from files using the
+	   "include @/etc/backup_includes" syntax (Closes Roundup bug
+	   #2370). Thanks to ale for the patch.
+	rsync:
+	 . Fix long rotation.
+	 . Make units clearer (Closes Redmine bug #2737)
+	 . Do arithmetic using bash rather than bc (Closes: #603173)
+	sys:
+	 . Fix hwinfo (Closes: #625501)
+	 . Fix gathering of information about loaded modules:
+	   cut is in /usr/bin actually.
+	tar:
+	 . Install by default. (Closes Redmine bug #2907)
+    helper changes
+	dup:
+	 . Fix separate signing key usecase. Thanks to Ian Beckwith for
+	   the patch.
+	 . Make units clearer (Closes Redmine bug #2737)
+	rdiff:
+	 . Generate 4096 bits RSA keys.
+	tar:
+	 . Install by default. (Closes Redmine bug #2907)
+    documentation changes
+	 . Recommend using 4096 bits RSA keys everywhere.
+
 version 0.9.8.1 -- October 31, 2010 (boo!)
     backupninja changes
 	 . Do not error out when no job is configured. Thanks to Jordi Mallach
 	   <jordi@debian.org> for the patch (Closes: #597684)
+    handler changes
 	sys:
 	 . Route around broken vgcfgbackup not able to handle multiple VG arguments
 

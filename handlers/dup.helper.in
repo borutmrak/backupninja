@@ -124,6 +124,7 @@ do_dup_dest() {
         formItem "keep" "$dup_keep"
         formItem "incremental" "$dup_incremental"
         formItem "increments" "$dup_increments"
+        formItem "keepincroffulls" "$dup_keepincroffulls"
         formItem "bandwidthlimit" "$dup_bandwidth"
         formItem "sshoptions" "$dup_sshoptions"
       formDisplay
@@ -141,8 +142,9 @@ do_dup_dest() {
       dup_keep=${thereply[3]}
       dup_incremental=${thereply[4]}
       dup_increments=${thereply[5]}
-      dup_bandwidth=${thereply[6]}
-      dup_sshoptions=${thereply[7]}
+      dup_keepincroffulls=${thereply[6]}
+      dup_bandwidth=${thereply[7]}
+      dup_sshoptions=${thereply[8]}
 
    done
    set +o noglob
@@ -179,7 +181,7 @@ do_dup_gpg_signkey() {
       dup_gpg_onekeypair=no
    fi
 
-   if [ "$dup_gpg_onekeypair" == "no" }; then
+   if [ "$dup_gpg_onekeypair" == "no" ]; then
       # signkey ?
       REPLY=
       while [ -z "$REPLY" -o -z "$dup_gpg_signkey" ]; do
@@ -421,8 +423,17 @@ increments = $dup_increments
 # (you can also use the time format of duplicity)
 # 'keep = yes' means : do not delete old data, the remote host will take care of this
 #keep = 60
+#keep = 1Y
 #keep = yes
 keep = $dup_keep
+
+# for how many full backups do we keep their later increments ;
+# default is all (keep all increments).
+# increments for older full backups will be deleted : only the more
+# recent ones (count provided) will be kept
+#keepincroffulls = all
+#keepincroffulls = 6
+keepincroffulls = $dup_keepincroffulls
 
 # full destination URL, in duplicity format; if set, desturl overrides
 # sshoptions, destdir, desthost and destuser; it also disables testconnect and
@@ -442,14 +453,14 @@ keep = $dup_keep
 
 # bandwith limit, in kbit/s ; default is 0, i.e. no limit
 # if using 'desturl' above, 'bandwidthlimit' must not be set
-# an example setting of 128 kbps would be:
+# an example setting of 128 Kbit/s would be:
 #bandwidthlimit = 128
 bandwidthlimit = $dup_bandwidth
 
 # passed directly to ssh, scp (and sftp in duplicity >=0.4.2)
 # warning: sftp does not support all scp options, especially -i; as
 # a workaround, you can use "-o <SSHOPTION>"
-#sshoptions = -o IdentityFile=/root/.ssh/id_dsa_duplicity
+#sshoptions = -o IdentityFile=/root/.ssh/id_rsa_duplicity
 sshoptions = $dup_sshoptions
 
 # put the backups under this destination directory
@@ -534,6 +545,7 @@ dup_wizard() {
    dup_incremental=yes
    dup_increments=30
    dup_keep=60
+   dup_keepincroffulls=
    dup_bandwidth=
    dup_sshoptions=
    dup_destdir="/backups/`hostname`"

@@ -164,6 +164,14 @@ exclude = /var/cache/backupninja/duplicity
 ## Default:
 # keep = 60
 
+# for how many full backups do we keep their later increments ;
+# default is all (keep all increments).
+# increments for older full backups will be deleted : only the more
+# recent ones (count provided) will be kept
+#
+## Default:
+# keepincroffulls = all
+
 ## full destination URL, in duplicity format; if set, desturl overrides
 ## sshoptions, destdir, desthost and destuser; it also disables testconnect and
 ## bandwithlimit. For details, see duplicity manpage, section "URL FORMAT", some
@@ -191,9 +199,9 @@ exclude = /var/cache/backupninja/duplicity
 ## Default:
 # ftp_password = 
 
-## bandwith limit, in kbit/s ; default is 0, i.e. no limit
+## bandwith limit, in Kbit/s ; default is 0, i.e. no limit
 ## if using 'desturl' above, 'bandwidthlimit' must not be set
-## an example setting of 128 kbps would be:
+## an example setting of 128 Kbit/s would be:
 ## bandwidthlimit = 128
 ##
 ## Default:
@@ -203,7 +211,7 @@ exclude = /var/cache/backupninja/duplicity
 ## warning: sftp does not support all scp options, especially -i; as
 ## a workaround, you can use "-o <SSHOPTION>"
 ## an example setting would be:
-## sshoptions = -o IdentityFile=/root/.ssh/id_dsa_duplicity
+## sshoptions = -o IdentityFile=/root/.ssh/id_rsa_duplicity
 ##
 ## Default:
 # sshoptions = 
