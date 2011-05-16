@@ -2,7 +2,10 @@ Source: backupninja
 Section: admin
 Priority: optional
 Maintainer: Micah Anderson <micah@riseup.net>
-Build-Depends: debhelper (>= 5.0.0), autoconf, automake
+Build-Depends:
+ debhelper (>= 5.0.0),
+ autoconf,
+ automake
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.2
 Homepage: https://labs.riseup.net/code/projects/show/backupninja
@@ -10,8 +13,21 @@ Vcs-Git: git://labs.riseup.net/backupninja.git
 
 Package: backupninja
 Architecture: all
-Depends: gawk | mawk, dialog, bash (>=2.05b-26), bsd-mailx | mailx | mailutils, ${misc:Depends}
-Suggests: rdiff-backup, hwinfo, genisoimage, wodim, cdrdao, dvd+rw-tools, debconf-utils, mdadm
+Depends:
+ gawk | mawk,
+ dialog,
+ bash (>=2.05b-26),
+ bsd-mailx | mailx | mailutils,
+ ${misc:Depends}
+Suggests:
+ cdrdao,
+ debconf-utils,
+ dvd+rw-tools,
+ genisoimage,
+ hwinfo,
+ mdadm,
+ rdiff-backup,
+ wodim
 Description: lightweight, extensible meta-backup system
  Backupninja lets you drop simple config files in /etc/backup.d to
  coordinate system backups. Backupninja is a master of many arts,
