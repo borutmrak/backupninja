@@ -20,9 +20,7 @@ Depends:
  bsd-mailx | mailx | mailutils,
  ${misc:Depends}
 Suggests:
- cdrdao,
  debconf-utils,
- dvd+rw-tools,
  genisoimage,
  hwinfo,
  mdadm,
