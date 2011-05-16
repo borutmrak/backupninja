@@ -1,6 +1,9 @@
 backupninja (0.9.9-1) UNRELEASED; urgency=low
 
-  * Bump Standards version: no changes
+  * Bump Standards version: no changes.
+  * List every handler's dependencies in the long description.
+  * Update Suggests wrt. current shipped handlers needs.
+  * Add watch file. (Close: #598086)
   * New upstream release
     . Use locking to avoid running concurrent instances of the same
       backup action. (Closes: #511300)
@@ -20,7 +23,7 @@ backupninja (0.9.9-1) UNRELEASED; urgency=low
     . Do arithmetic using bash rather than bc in rsync handler
       (Closes: #603173)
     . Fix hwinfo and gathering of information about loaded modules in
-      sys handler.
+      sys handler. (Closes: #625501)
     . Install tar handler and helper.
     . Support separate signing key in Duplicity helper.
     . Generate 4096 bits RSA keys, recommend doing so in the
