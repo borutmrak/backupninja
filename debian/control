@@ -20,11 +20,15 @@ Depends:
  bsd-mailx | mailx | mailutils,
  ${misc:Depends}
 Suggests:
+ bzip2,
  debconf-utils,
+ duplicity,
  genisoimage,
  hwinfo,
  mdadm,
  rdiff-backup,
+ rsync,
+ subversion,
  wodim
 Description: lightweight, extensible meta-backup system
  Backupninja lets you drop simple config files in /etc/backup.d to
