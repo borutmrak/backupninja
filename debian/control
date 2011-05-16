@@ -25,4 +25,14 @@ Description: lightweight, extensible meta-backup system
  .
  Backupninja currently supports common backup utilities, easing their 
  configuration, currently supported are: rdiff-backup, duplicity, CD/DVD
-
+ .
+ Most handlers have their own dependencies/recommendations, shown in brackets
+ bellow:
+ .
+  - dup [duplicity]
+  - rdiff [rdiff-backup]
+  - sys [debconf-utils, hwinfo, mdadm]
+  - makecd [genisoimage, wodim]
+  - rsync [rsync]
+  - svn [subversion]
+  - tar [bzip2]
