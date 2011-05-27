@@ -9,6 +9,7 @@ Build-Depends:
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.2
 Homepage: https://labs.riseup.net/code/projects/show/backupninja
+Vcs-Browser: https://labs.riseup.net/code/projects/backupninja/repository/show?rev=debian
 Vcs-Git: git://labs.riseup.net/backupninja.git
 
 Package: backupninja
