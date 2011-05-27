@@ -1,4 +1,4 @@
-backupninja (0.9.9-1) UNRELEASED; urgency=low
+backupninja (0.9.9-1) unstable; urgency=low
 
   [ intrigeri ]
   * Bump Standards version: no changes.
@@ -31,7 +31,7 @@ backupninja (0.9.9-1) UNRELEASED; urgency=low
     . Generate 4096 bits RSA keys, recommend doing so in the
       documentation.
 
- -- Micah Anderson <micah@riseup.net>  Sun, 15 May 2011 19:40:34 +0200
+ -- Micah Anderson <micah@riseup.net>  Fri, 27 May 2011 15:32:13 +0200
 
 backupninja (0.9.8.1-1) unstable; urgency=low
 
