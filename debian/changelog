@@ -1,9 +1,11 @@
 backupninja (0.9.9-1) UNRELEASED; urgency=low
 
+  [ intrigeri ]
   * Bump Standards version: no changes.
   * List every handler's dependencies in the long description.
   * Update Suggests wrt. current shipped handlers needs.
   * Add watch file. (Close: #598086)
+  * Add Vcs-Browser control field.
   * New upstream release
     . Use locking to avoid running concurrent instances of the same
       backup action. (Closes: #511300)
