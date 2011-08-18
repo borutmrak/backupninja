@@ -3,9 +3,8 @@ Section: admin
 Priority: optional
 Maintainer: Micah Anderson <micah@riseup.net>
 Build-Depends:
- debhelper (>= 5.0.0),
- autoconf,
- automake
+ debhelper (>= 7.0.50~),
+ dh-autoreconf
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.2
 Homepage: https://labs.riseup.net/code/projects/show/backupninja

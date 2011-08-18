@@ -1,85 +1,21 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
 
 PACKAGE = backupninja
 TMP = $(CURDIR)/debian/$(PACKAGE)
 
-INSTALL = install
-INSTALL_FILE    = $(INSTALL) -p    -oroot -groot -m644
-INSTALL_PROGRAM = $(INSTALL) -p    -oroot -groot -m755
-INSTALL_SCRIPT  = $(INSTALL) -p    -oroot -groot -m755
-INSTALL_DIR     = $(INSTALL) -p -d -oroot -groot -m755
+%:
+	dh $@ --with autoreconf
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+override_dh_auto_install:
+	dh_auto_install
+	chmod -x $(TMP)/usr/lib/backupninja/parseini
+	chmod -x $(TMP)/usr/lib/backupninja/vserver
+	rm $(TMP)/usr/share/backupninja/example.*
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	rm -f config.sub config.guess
-	ln -sf /usr/share/misc/config.sub config.sub
-	ln -sf /usr/share/misc/config.guess config.guess
-	chmod +x configure
-	./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --mandir=/usr/share/man
-	touch configure-stamp
-
-
-build: configure-stamp build-stamp
-
-build-stamp: configure-stamp 
-	dh_testdir
-	$(MAKE)
-	touch build-stamp
-
-clean:
-	# set config.sub and config.guess back to how they are in orig tarball
-	# so dpkg-source will work (diff.gz considers a change to a symlink an
-	# "unrepresentable change to source", so we need to undo what is done
-	# in the configure-stamp target
-	rm -f config.sub config.guess
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp configure-stamp
-	dh_clean 
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_clean -k 
-	dh_installdirs
-
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/backupninja
-	chmod +x debian/backupninja/usr/lib/backupninja/easydialog
-	chmod +x debian/backupninja/usr/lib/backupninja/tools
-	chmod -x debian/backupninja/usr/lib/backupninja/parseini
-	chmod -x debian/backupninja/usr/lib/backupninja/vserver
-	rm debian/backupninja/usr/share/backupninja/example.*
-
-	dh_install
-
-binary-arch: 
-
-binary-indep: build-indep
-
-build-indep: build install
-	dh_testdir
-	dh_installdirs
-	dh_testroot
-	dh_installchangelogs ChangeLog
-	dh_installdocs
-	dh_installman
-	dh_installexamples
-	dh_link
+override_dh_compress:
 	dh_compress -Xexample
-	dh_fixperms -Xdebian/backupninja/etc/backup.d
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
 
+override_dh_installchangelogs:
+	dh_installchangelogs ChangeLog
 
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure
