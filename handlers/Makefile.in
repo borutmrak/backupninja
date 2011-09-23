@@ -148,7 +148,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-HANDLERS = dup dup.helper ldap ldap.helper maildir makecd		\
+HANDLERS = dup dup.helper maildir makecd		\
          makecd.helper mysql mysql.helper pgsql pgsql.helper rdiff	\
          rdiff.helper rsync sh svn sys sys.helper trac tar tar.helper
 
