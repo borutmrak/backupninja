@@ -1,3 +1,11 @@
+backupninja (0.9.10-1) unstable; urgency=low
+
+  Being severely broken for ages (see #596935), LDAP support was removed upstream.
+  It will come back once this code has found itself a maintainer.
+  Interested? Get in touch!
+
+ -- intrigeri <intrigeri+debian@boum.org>  Fri, 23 Sep 2011 17:32:11 +0200
+
 backupninja (0.9.8-1) unstable; urgency=low
 
   * duplicity 0.6.01 and later defaults to using an archive (cache)

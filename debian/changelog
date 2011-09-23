@@ -1,3 +1,30 @@
+backupninja (0.9.10-1) unstable; urgency=low
+
+  * Team upload.
+  * New upsteam release
+    . Fix "Locking mechanism causes variable problem".
+    . Allow 'when = XXX' in sh jobs.
+    . Stop supporting duplicity < 0.6.01.
+    . Fixed $rsync_options. (Closes: #639545)
+    . Fix typo in manpage.
+    . Stop using hyphen as minus sign in manpages.
+    . Fix infinite loop in rdiff helper when version inconsistency is detected.
+      Thanks to Chris Lamb for the patch.
+      (Closes: #639547)
+    . Fix incorrect duplicity version check for keepincroffulls.
+      Thanks to Olivier Berger for the patch.
+      (Closes: #641120)
+    . Don't install LDAP handler, helper and example configuration file.
+    . Don't mention LDAP support in documentation.
+  * Formally move to team-maintenance.
+  * Use 3.0 (quilt) source format.
+  * Convert to dh7 minimal rules with dh-autoreconf.
+  * preinst: use "set -e" in the script body instead of in the shebang.
+  * Don't mention LDAP support in long description, don't install its
+    example configuration file.
+
+ -- intrigeri <intrigeri+debian@boum.org>  Fri, 23 Sep 2011 17:12:22 +0200
+
 backupninja (0.9.9-1) unstable; urgency=low
 
   [ intrigeri ]
