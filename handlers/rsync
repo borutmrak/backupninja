@@ -397,7 +397,7 @@ function rotate_long {
     fi
     
     # Rotate the current list of backups, if we can.
-    oldest=`find $backuproot -maxdepth 1 -type d -name $rottype'.*' | @SED@ 's/^.*\.//' | sort -n | tail -1`
+    oldest=`find $backuproot -maxdepth 1 -type d -name $rottype'.*' | /bin/sed 's/^.*\.//' | sort -n | tail -1`
     [ "$oldest" == "" ] && oldest=0
     for (( i=$oldest; i > 0; i-- )); do
       if [ -d $dir.$i ]; then
@@ -445,7 +445,7 @@ function rotate_long {
   for rottype in daily weekly monthly; do
     max=$((keep${rottype}+1))
     dir="$backuproot/$rottype"
-    oldest=`find $backuproot -maxdepth 1 -type d -name $rottype'.*' | @SED@ 's/^.*\.//' | sort -n | tail -1`
+    oldest=`find $backuproot -maxdepth 1 -type d -name $rottype'.*' | /bin/sed 's/^.*\.//' | sort -n | tail -1`
     [ "$oldest" == "" ] && oldest=0 
     # if we've rotated the last backup off the stack, remove it.
     for (( i=$oldest; i >= $max; i-- )); do
@@ -498,7 +498,7 @@ function rotate_long_remote {
     fi
     
     # Rotate the current list of backups, if we can.
-    oldest=\`find $backuproot -maxdepth 1 -type d -name \$rottype'.*' | @SED@ 's/^.*\.//' | sort -n | tail -1\`
+    oldest=\`find $backuproot -maxdepth 1 -type d -name \$rottype'.*' | /bin/sed 's/^.*\.//' | sort -n | tail -1\`
     [ "\$oldest" == "" ] && oldest=0
     for (( i=\$oldest; i > 0; i-- )); do
       if [ -d \$dir.\$i ]; then
@@ -546,7 +546,7 @@ function rotate_long_remote {
   for rottype in daily weekly monthly; do
     max=\$((keep\${rottype}+1))
     dir="$backuproot/\$rottype"
-    oldest=\`find $backuproot -maxdepth 1 -type d -name \$rottype'.*' | @SED@ 's/^.*\.//' | sort -n | tail -1\`
+    oldest=\`find $backuproot -maxdepth 1 -type d -name \$rottype'.*' | /bin/sed 's/^.*\.//' | sort -n | tail -1\`
     [ "\$oldest" == "" ] && oldest=0 
     # if we've rotated the last backup off the stack, remove it.
     for (( i=\$oldest; i >= \$max; i-- )); do

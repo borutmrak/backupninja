@@ -90,9 +90,9 @@ if [ -n "$dbusername" -a -n "$dbpassword" ]
 then
    if [ $usevserver = yes ]
    then
-      home=`$VSERVER $vsname exec getent passwd "root" | @AWK@ -F: '{print $6}'`
+      home=`$VSERVER $vsname exec getent passwd "root" | /usr/bin/awk -F: '{print $6}'`
    else
-      home=`getent passwd "root" | @AWK@ -F: '{print $6}'`
+      home=`getent passwd "root" | /usr/bin/awk -F: '{print $6}'`
    fi
 
    [ -d $home ] || fatal "Can't find root's home directory ($home)."
@@ -147,7 +147,7 @@ then
    userset=true;
    if [ $usevserver = yes ]
    then
-      userhome=`$VSERVER $vsname exec getent passwd "$user" | @AWK@ -F: '{print $6}'`
+      userhome=`$VSERVER $vsname exec getent passwd "$user" | /usr/bin/awk -F: '{print $6}'`
       if [ $? -eq 2 ]
       then
 	 fatal "User $user not found in /etc/passwd"
@@ -155,7 +155,7 @@ then
       debug "User home set to: $vroot$userhome"
       [ -f $vroot$userhome/.my.cnf ] || fatal "Can't find config file in $userhome/.my.cnf"
    else
-      userhome=`getent passwd "$user" | @AWK@ -F: '{print $6}'`
+      userhome=`getent passwd "$user" | /usr/bin/awk -F: '{print $6}'`
       if [ $? -eq 2 ]
       then
 	 fatal "User $user not found in /etc/passwd"

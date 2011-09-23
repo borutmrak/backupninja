@@ -277,7 +277,7 @@ elif [ $os = "debian" ]; then
       echo "Level: $level" >> $sysreportfile
       for f in /etc/rc${level}.d/*; do
          # Remove /etc/Knn or Snn from beginning
-         ff=$(echo $f | @SED@ 's_/etc/rc..d/[KS][0-9][0-9]__')
+         ff=$(echo $f | /bin/sed 's_/etc/rc..d/[KS][0-9][0-9]__')
          if [ $f != $ff ]; then
             echo $ff >> $sysreportfile
          fi
@@ -564,7 +564,7 @@ fi
 
 if [ "$partitions" == "yes" ]; then
    if [ "$dosfdisk" == "yes" ]; then
-      devices=`LC_ALL=C $SFDISK -l 2>/dev/null | grep "^Disk /dev" | @AWK@ '{print $2}' | cut -d: -f1`
+      devices=`LC_ALL=C $SFDISK -l 2>/dev/null | grep "^Disk /dev" | /usr/bin/awk '{print $2}' | cut -d: -f1`
    if [ "$devices" == "" ]; then
       warning "No harddisks found"
    fi
@@ -589,7 +589,7 @@ if [ "$partitions" == "yes" ]; then
 fi
 
 if [ "$luksheaders" == "yes" ]; then
-   devices=`LC_ALL=C $SFDISK -l 2>/dev/null | grep "^Disk /dev" | @AWK@ '{print $2}' | cut -d: -f1`
+   devices=`LC_ALL=C $SFDISK -l 2>/dev/null | grep "^Disk /dev" | /usr/bin/awk '{print $2}' | cut -d: -f1`
    [ -n "$devices" ] || warning "No block device found"
    targetdevices=""
    for dev in $devices; do
@@ -604,8 +604,8 @@ if [ "$luksheaders" == "yes" ]; then
       outputfile=${luksheadersfile//__star__/$label}
       # the following sizes are expressed in terms of 512-byte sectors
       debug "Let us find out the Luks header size for $dev"
-      debug "$CRYPTSETUP luksDump \"$dev\" | grep '^Payload offset:' | @AWK@ '{print $3}'"
-      headersize=`$CRYPTSETUP luksDump "$dev" | grep '^Payload offset:' | @AWK@ '{print $3}'`
+      debug "$CRYPTSETUP luksDump \"$dev\" | grep '^Payload offset:' | /usr/bin/awk '{print $3}'"
+      headersize=`$CRYPTSETUP luksDump "$dev" | grep '^Payload offset:' | /usr/bin/awk '{print $3}'`
       if [ $? -ne 0 ]; then
          warning "Could not compute the size of Luks header, skipping device $dev"
          continue
@@ -646,8 +646,8 @@ function doLvmBackup () {
       return 2
    fi
    debug "Let's try to gather the list of LVM volume groups"
-   debug "$VGS --options vg_name --noheadings | @SED@ 's/^[ ]*//' | @SED@ 's/[ ]*$//' | tr '\n' ' '"
-   vgs=`$VGS --options vg_name --noheadings | @SED@ 's/^[ ]*//' | @SED@ 's/[ ]*$//' | tr '\n' ' '`
+   debug "$VGS --options vg_name --noheadings | /bin/sed 's/^[ ]*//' | /bin/sed 's/[ ]*$//' | tr '\n' ' '"
+   vgs=`$VGS --options vg_name --noheadings | /bin/sed 's/^[ ]*//' | /bin/sed 's/[ ]*$//' | tr '\n' ' '`
    debug "Let's try to backup LVM metadata for detected volume groups: $vgs"
    for vg in $vgs
    do
