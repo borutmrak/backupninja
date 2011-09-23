@@ -1,7 +1,8 @@
 Source: backupninja
 Section: admin
 Priority: optional
-Maintainer: Micah Anderson <micah@riseup.net>
+Maintainer: Debian backupninja maintainers <pkg-backupninja@lists.riseup.net>
+Uploaders: Micah Anderson <micah@riseup.net>
 Build-Depends:
  debhelper (>= 7.0.50~),
  dh-autoreconf
