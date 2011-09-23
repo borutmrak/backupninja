@@ -1,5 +1,4 @@
 examples/example.dup
-examples/example.ldap
 examples/example.maildir
 examples/example.makecd
 examples/example.mysql
