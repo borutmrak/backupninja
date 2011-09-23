@@ -1,6 +1,5 @@
 backupninja (0.9.10-1) unstable; urgency=low
 
-  * Team upload.
   * New upsteam release
     . Fix "Locking mechanism causes variable problem".
     . Allow 'when = XXX' in sh jobs.
@@ -16,14 +15,14 @@ backupninja (0.9.10-1) unstable; urgency=low
       (Closes: #641120)
     . Don't install LDAP handler, helper and example configuration file.
     . Don't mention LDAP support in documentation.
-  * Formally move to team-maintenance.
+  * Formally move to team-maintenance, add myself to uploaders.
   * Use 3.0 (quilt) source format.
   * Convert to dh7 minimal rules with dh-autoreconf.
   * preinst: use "set -e" in the script body instead of in the shebang.
   * Don't mention LDAP support in long description, don't install its
     example configuration file.
 
- -- intrigeri <intrigeri+debian@boum.org>  Fri, 23 Sep 2011 17:12:22 +0200
+ -- intrigeri <intrigeri+debian@boum.org>  Fri, 23 Sep 2011 18:24:41 +0200
 
 backupninja (0.9.9-1) unstable; urgency=low
 
