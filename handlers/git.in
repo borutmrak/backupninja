@@ -1,0 +1,137 @@
+#
+# git handler for backupninja using gibak as backend
+# feedback: rhatto at riseup.net
+#
+#  git handler is free software; you can redistribute it and/or modify it under the
+#  terms of the GNU General Public License as published by the Free Software
+#  Foundation; either version 2 of the License, or any later version.
+#
+#  git handler is distributed in the hope that it will be useful, but WITHOUT ANY
+#  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+#  A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License along with
+#  this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+#  Place - Suite 330, Boston, MA 02111-1307, USA
+#
+# Config file options
+# -------------------
+#
+#   [general]
+#   rm_older_than = set to the max history covered by git
+#   fsck = set to "yes" to run 'git fsck' after commit
+#   compress = set to "yes" to run 'git gc' after commit
+#
+#   [source]
+#   repository = the git repository folder
+#   pull = git repository list to pull changes from
+#
+#   [dest]
+#   push = remote repositories to push changes after processing other tasks
+#   send_patches = email recipients to send resulting patches
+#
+# Features
+# --------
+#
+#   - Purge old revisions (to save space or remove sensitive data).
+#   - Automatically add/remove files into revision control.
+#   - Compression (gc) and checking (fsck).
+#   - Pull changes from remote sources.
+#   - Push branch to remote destinations.
+#   - Send resulting patches to email recipients.
+#
+# TODO
+# ----
+#
+#   - Issue warnings/errors at each failing stage.
+#   - Merge operation.
+#
+
+function eval_config {
+
+  setsection general
+  getconf rm_older_than
+  getconf fsck no
+  getconf compress no
+
+  setsection source
+  getconf repository
+  getconf pull
+
+  setsection dest
+  getconf push
+  getconf send_patches
+
+}
+
+function run_gibak {
+
+  local cmd="$*"
+
+  if [ ! -d "$repository" ]; then
+    fatal "Folder $repository does not exist."
+    exit 1
+  fi
+
+  if [ ! -d "$repository/.git" ]; then
+    $HOME=$repository gibak init
+    cmd="commit"
+  fi
+
+  if [ -z "$cmd" ]; then
+    cmd="commit"
+  fi
+
+  $HOME=$repository gibak $cmd
+
+}
+
+# Check configuration
+eval_config
+
+# Remove old content
+if [ ! -z "$rm_older_than" ]; then
+  run_gibak rm-older-than $rm_older_than
+fi
+
+# Commit changes
+run_gibak $repository
+
+# Pull changes from remote sources
+if [ ! -z "$pull" ]; then
+  cwd="`pwd`"
+  cd $repository
+  for remote in $pull; do
+    git pull $remote
+  done
+  cd $pwd
+fi
+
+# Compress repository
+if [ "$compress" == "yes" ]; then
+  ( cd $repository && git gc )
+fi
+
+# Run fsck
+if [ "$fsck" == "yes" ]; then
+  ( cd $repository && git fsck )
+fi
+
+# Push changes to remote repositories
+if [ ! -z "$push" ]; then
+  cwd="`pwd`"
+  cd $repository
+  for remote in $push; do
+    git push $remote master
+  done
+  cd $pwd
+fi
+
+# Send patches
+if [ ! -z "$send_patches" ]; then
+  cwd="`pwd`"
+  cd $repository
+  git format-patch origin
+  git send-email --to $send_patches
+  cd $pwd
+fi
