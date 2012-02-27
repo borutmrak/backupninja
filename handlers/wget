@@ -16,6 +16,7 @@
 #   read_only = set to 1 if $partition is mounted read-only
 #   mountpoint = backup partition mountpoint or backup main folder
 #   backupdir = folder relative do $mountpoint where the backup should be stored
+#   format = specify backup storage format: short, long or mirror (i.e, no rotations) 
 #   days = number of backup increments (min = 5)
 #   lockfile = lockfile to be kept during backup execution
 #   nicelevel = wget command nice level
@@ -26,7 +27,7 @@
 #   wget = wget program
 #   wget_options = wget command options
 #   url = remote data url
-#   bandwidthlimit = set a bandwidth limit in kbps (remote source only)
+#   bandwidthlimit = set a badnwidth limit in kbps (remote source only)
 #
 #   [destination]
 #   folder = local folder
@@ -40,69 +41,221 @@
 #   mv = mv command
 #   fsck = fsck command
 #
-# TODO: Daily, weekly and monthly snapshot rotation (like the one present on maildir handler).
+# TODO: Test daily, weekly and monthly snapshot rotation (like rsync handler).
 #
 
-# config file evaluation
+# function definitions 
 
-setsection system
-getconf rm rm
-getconf cp cp
-getconf touch touch
-getconf mv mv
-getconf fsck fsck
+function eval_config { 
 
-setsection general
-getconf log /var/log/backup/wget.log
-getconf partition
-getconf fscheck
-getconf read_only
-getconf mountpoint
-getconf backupdir
-getconf rotate
-getconf days
-getconf lockfile
-getconf nicelevel 0
-getconf enable_mv_timestamp_bug no
-getconf tmp /tmp
+  # system section
 
-setsection source
-getconf wget wget
-getconf wget_options
-getconf url
-getconf bandwidthlimit
+  setsection system
+  getconf rm rm
+  getconf cp cp
+  getconf touch touch
+  getconf mv mv
+  getconf fsck fsck
+  
+  # general section
+  setsection general
+  getconf log /var/log/backup/wget.log
+  getconf partition
+  getconf fscheck
+  getconf read_only
+  getconf mountpoint
+  getconf backupdir
+  getconf format short
+  getconf rotate
+  getconf days
+  getconf keepdaily 5
+  getconf keepweekly 3
+  getconf keepmonthly 1
+  getconf lockfile
+  getconf nicelevel 0
+  getconf enable_mv_timestamp_bug no
+  getconf tmp /tmp
+  
+  # source section
 
-setsection destination
-getconf folder
+  setsection source
+  getconf wget wget
+  getconf wget_options
+  getconf url
+  getconf bandwidthlimit
+  
+  # destination section
 
-# function definitions
+  setsection destination
+  getconf folder
 
-function rotate {
+  # Just local backups are supported by now
+  dest="local"
 
-   if [[ "$2" < 4 ]]; then
-      error "Rotate: minimum of 4 rotations"
-      exit 1
-   fi
+  backupdir="$mountpoint/$backupdir"
 
-   if [ -d $1.$2 ]; then
-      $nice $mv /$1.$2 /$1.tmp
-   fi
+  if [ "$dest" == "local" ] && [ ! -d "$backupdir" ]; then 
+    error "Backupdir $backupdir does not exist"
+    exit 1
+  fi
 
-   for ((n=$[$2 - 1]; n >= 0; n--)); do
-      if [ -d $1.$n ]; then
-         dest=$[$n + 1]
-         $nice $mv /$1.$n /$1.$dest
-         $touch /$1.$dest
+  if [ "$format" == "short" ]; then
+     if [ -z "$days" ]; then
+        keep="4"
+     else
+        keep=$[$days - 1]
+     fi
+  fi
+
+  if [ ! -z "$nicelevel" ]; then 
+    nice="nice -n $nicelevel"
+  else 
+    nice=""
+  fi
+
+  if [ $enable_mv_timestamp_bug == "yes" ]; then
+    mv=move_files
+  fi
+
+  if [ ! -z "$bandwidthlimit" ]; then
+     limit_rate="--limit-rate=$bandwidthlimit""k"
+  fi
+
+}
+
+# using rotate_short from rsync handler
+function rotate_short {
+
+  local dest
+  local folder="$1"
+  local keep="$2"
+  local metadata="`dirname $folder`/metadata"
+
+  if [[ "$keep" -lt 4 ]]; then
+    error "Rotate: minimum of 4 rotations"
+    exit 1
+  fi
+
+  if [ -d $folder.$keep ]; then
+    $nice $mv /$folder.$keep /$folder.tmp
+  fi
+
+  for ((n=$[$keep - 1]; n >= 0; n--)); do
+    if [ -d $folder.$n ]; then
+      dest=$[$n + 1]
+      $nice $mv /$folder.$n /$folder.$dest
+      $touch /$folder.$dest
+      mkdir -p $metadata/`basename $folder`.$dest
+      date +%c%n%s > $metadata/`basename $folder`.$dest/rotated
+    fi
+  done
+
+  if [ -d $folder.tmp ]; then
+    $nice $mv /$folder.tmp /$folder.0
+  fi
+
+  if [ -d $folder.1 ]; then
+    $nice $cp -alf /$folder.1/. /$folder.0
+  fi
+
+}
+
+# using rotate_long from rsync handler
+function rotate_long {
+
+  backuproot="$1"
+  seconds_daily=86400
+  seconds_weekly=604800
+  seconds_monthly=2628000
+  keepdaily=$keepdaily
+  keepweekly=$keepweekly
+  keepmonthly=$keepmonthly
+  now=`date +%s`
+
+  local metadata
+
+  if [ ! -d "$backuproot" ]; then
+    echo "Debug: skipping rotate of $backuproot as it doesn't exist."
+    exit
+  fi
+
+  for rottype in daily weekly monthly; do
+    seconds=$((seconds_${rottype}))
+
+    dir="$backuproot/$rottype"
+    metadata="$backuproot/metadata/$rottype.1"
+    mkdir -p $metadata
+    if [ ! -d $dir.1 ]; then
+      echo "Debug: $dir.1 does not exist, skipping."
+      continue 1
+    elif [ ! -f $metadata/created ] && [ ! -f $metadata/rotated ]; then
+      echo "Warning: metadata does not exist for $dir.1. This backup may be only partially completed. Skipping rotation."
+      continue 1
+    fi
+    
+    # Rotate the current list of backups, if we can.
+    oldest=`find $backuproot -maxdepth 1 -type d -name $rottype'.*' | @SED@ 's/^.*\.//' | sort -n | tail -1`
+    [ "$oldest" == "" ] && oldest=0
+    for (( i=$oldest; i > 0; i-- )); do
+      if [ -d $dir.$i ]; then
+        if [ -f $metadata/created ]; then
+          created=`tail -1 $metadata/created`
+        elif [ -f $metadata/rotated ]; then
+          created=`tail -1 $metadata/rotated`
+        else
+          created=0
+        fi
+        cutoff_time=$(( now - (seconds*(i-1)) ))
+        if [ ! $created -gt $cutoff_time ]; then
+          next=$(( i + 1 ))
+          if [ ! -d $dir.$next ]; then
+            echo "Debug: $rottype.$i --> $rottype.$next"
+            $nice mv $dir.$i $dir.$next
+            mkdir -p $backuproot/metadata/$rottype.$next
+            date +%c%n%s > $backuproot/metadata/$rottype.$next/rotated
+          else
+            echo "Debug: skipping rotation of $dir.$i because $dir.$next already exists."
+          fi
+        else
+          echo "Debug: skipping rotation of $dir.$i because it was created" $(( (now-created)/86400)) "days ago ("$(( (now-cutoff_time)/86400))" needed)."
+        fi
       fi
-   done
+    done
+  done
 
-   if [ -d $1.tmp ]; then
-      $nice $mv /$1.tmp /$1.0
-   fi
+  max=$((keepdaily+1))
+  if [ $keepweekly -gt 0 -a -d $backuproot/daily.$max -a ! -d $backuproot/weekly.1 ]; then
+    echo "Debug: daily.$max --> weekly.1"
+    $nice mv $backuproot/daily.$max $backuproot/weekly.1
+    mkdir -p $backuproot/metadata/weekly.1
+    date +%c%n%s > $backuproot/metadata/weekly.1/rotated
+  fi
 
-   if [ -d $1.1 ]; then
-      $nice $cp -alf /$1.1/. /$1.0
-   fi
+  max=$((keepweekly+1))
+  if [ $keepmonthly -gt 0 -a -d $backuproot/weekly.$max -a ! -d $backuproot/monthly.1 ]; then
+    echo "Debug: weekly.$max --> monthly.1"
+    $nice mv $backuproot/weekly.$max $backuproot/monthly.1
+    mkdir -p $backuproot/metadata/monthly.1
+    date +%c%n%s > $backuproot/metadata/monthly.1/rotated
+  fi
+
+  for rottype in daily weekly monthly; do
+    max=$((keep${rottype}+1))
+    dir="$backuproot/$rottype"
+    oldest=`find $backuproot -maxdepth 1 -type d -name $rottype'.*' | @SED@ 's/^.*\.//' | sort -n | tail -1`
+    [ "$oldest" == "" ] && oldest=0 
+    # if we've rotated the last backup off the stack, remove it.
+    for (( i=$oldest; i >= $max; i-- )); do
+      if [ -d $dir.$i ]; then
+        if [ -d $backuproot/rotate.tmp ]; then
+          echo "Debug: removing rotate.tmp"
+          $nice rm -rf $backuproot/rotate.tmp
+        fi
+        echo "Debug: moving $rottype.$i to rotate.tmp"
+        $nice mv $dir.$i $backuproot/rotate.tmp
+      fi
+    done
+  done
 
 }
 
@@ -114,107 +267,219 @@ function move_files {
    $rm $ref;
 }
 
-backupdir="$mountpoint/$backupdir"
+# using setup_long_dirs from rsync handler
+function setup_long_dirs {
 
-# does $backupdir exists?
+  local destdir=$1
+  local backuptype=$2
+  local dir="$destdir/$backuptype"
+  local tmpdir="$destdir/rotate.tmp"
+  local metadata="$destdir/metadata/$backuptype.1"
 
-if [ ! -d "$backupdir" ]; then
-   error "Backupdir $backupdir does not exist"
-   exit 1
-fi
+  if [ ! -d $destdir ]; then
+    echo "Creating destination directory $destdir..."
+    mkdir -p $destdir
+  fi
 
-# setup number of increments
+  if [ -d $dir.1 ]; then
+    if [ -f $metadata/created ]; then
+      echo "Warning: $dir.1 already exists. Overwriting contents."
+    else
+      echo "Warning: we seem to be resuming a partially written $dir.1"
+    fi
+  else
+    if [ -d $tmpdir ]; then
+      mv $tmpdir $dir.1
+      if [ $? == 1 ]; then
+        echo "Fatal: could mv $destdir/rotate.tmp $dir.1 on host $host"
+        exit 1
+      fi
+    else
+      mkdir --parents $dir.1
+      if [ $? == 1 ]; then
+        echo "Fatal: could not create directory $dir.1 on host $host"
+        exit 1
+      fi
+    fi
+    if [ -d $dir.2 ]; then
+      echo "Debug: update links $backuptype.2 --> $backuptype.1"
+      cp -alf $dir.2/. $dir.1
+      #if [ $? == 1 ]; then
+      #  echo "Fatal: could not create hard links to $dir.1 on host $host"
+      #  exit 1
+      #fi
+    fi
+  fi
+  [ -f $metadata/created ] && rm $metadata/created
+  [ -f $metadata/rotated ] && rm $metadata/rotated
 
-if [ -z "$days" ]; then
-   keep="4"
-else
-   keep=$[$days - 1]
-fi
+}
 
-# lockfile setup
+# using prepare_storage from rsync handler
+function prepare_storage {
 
-if [ ! -z "$lockfile" ]; then
-   $touch $lockfile || warning "Could not create lockfile $lockfile"
-fi
+  section="`basename $SECTION`"
 
-# nicelevel setup
+  if [ "$format" == "short" ]; then
 
-if [ ! -z "$nicelevel" ]; then
-   nice="nice -n $nicelevel"
-else
-   nice=""
-fi
+    suffix="$section.0"
+    info "Rotating $backupdir/$SECTION..."
+    echo "Rotating $backupdir/$SECTION..." >> $log
 
-# set mv procedure
+    if [ "$dest" == "remote" ]; then
+      rotate_short_remote $backupdir/$SECTION/$section $keep
+    else
+      rotate_short $backupdir/$SECTION/$section $keep
+      if [ ! -d "$backupdir/$SECTION/$section.0" ]; then
+        mkdir -p $backupdir/$SECTION/$section.0
+      fi
+    fi
 
-if [ $enable_mv_timestamp_bug == "yes" ]; then
-   mv=move_files
-fi
+  elif [ "$format" == "long" ]; then
 
-# set excludes
+    if [ $keepdaily -gt 0 ]; then
+      btype=daily
+    elif [ $keepweekly -gt 0 ]; then
+      btype=weekly
+    elif [ $keepmonthly -gt 0 ]; then
+      btype=monthly
+    else
+      fatal "keeping no backups";
+      exit 1
+    fi
 
-for path in $exclude; do
-   EXCLUDES="$EXCLUDES --exclude=$path"
-done
+    suffix="$btype.1"
+    info "Rotating $backupdir/$SECTION/..."
+    echo "Rotating $backupdir/$SECTION/..." >> $log
+
+    if [ "$dest" == "remote" ]; then
+      rotate_long_remote $backupdir/$SECTION
+      setup_long_dirs_remote $backupdir/$SECTION $btype
+    else
+      rotate_long $backupdir/$SECTION
+      setup_long_dirs $backupdir/$SECTION $btype
+    fi
+
+  elif [ "$format" == "mirror" ]; then
+    suffix=""
+  else
+    fatal "Invalid backup format $format"
+    exit 1
+  fi
+
+}
+
+# using mount_ro from rsync handler
+function mount_ro {
+
+  # remount backup destination as read-only
+
+  if [ "$dest" == "local" ]; then
+    if [ "$read_only" == "1" ] || [ "$read_only" == "yes" ]; then
+      mount -o remount,ro $mountpoint
+    fi
+  fi
+
+}
+
+# usind run_fsck from rsync handler
+function run_fsck {
+
+  # check partition for errors
+
+  if [ "$dest" == "local" ]; then
+    if [ "$fscheck" == "1" ] || [ "$fscheck" == "yes" ]; then
+      umount $mountpoint
+      if (($?)); then
+        warning "Could not umount $mountpoint to run fsck"
+      else
+        $nice $fsck -v -y $partition >> $log
+        mount $mountpoint
+      fi
+    fi
+  fi
+
+}
+
+# using mount_rw from rsync handler
+function mount_rw {
+
+  # mount backup destination folder as read-write
+
+  if [ "$dest" == "local" ]; then
+    if [ "$read_only" == "1" ] || [ "$read_only" == "yes" ]; then
+      if [ -d "$mountpoint" ]; then
+        mount -o remount,rw $mountpoint
+        if (($?)); then
+          error "Could not mount $mountpoint"
+          exit 1
+        fi
+      fi
+    fi
+  fi
+
+}
+
+# using set_lockfile from rsync handler
+function set_lockfile {
+
+  if [ ! -z "$lockfile" ]; then
+    $touch $lockfile || warning "Could not create lockfile $lockfile"
+  fi
+
+}
+
+# using unset_lockfile from rsync handler
+function unset_lockfile {
+
+  if [ ! -z "$lockfile" ]; then
+    $rm $lockfile || warning "Could not remove lockfile $lockfile"
+  fi
+
+}
+
+# using set_dest from rsync handler
+function set_dest { 
+
+  if [ "$dest" == "local" ]; then
+    dest_path="$backupdir/$SECTION/$suffix/"
+  else
+    if [ "$protocol" == "rsync" ]; then
+      dest_path="rsync://$user@$host:$port/$backupdir/$SECTION/$suffix/"
+    else
+      dest_path="$user@$host:$backupdir/$SECTION/$suffix/"
+    fi
+  fi
+
+}
+
+function do_backup {
+
+  # the backup procedure
+  
+  SECTION="$folder"
+  prepare_storage
+  set_dest
+  
+  cwd="`pwd`"
+  cd $dest_path
+  $nice $wget $wget_options $limit_rate -r -c -N -e robots=off $url
+  cd $cwd
+  
+  $touch $dest_path
+
+}
+
+eval_config
+set_lockfile
+mount_rw
 
 echo "Starting backup at `date`" >> $log
 
-# mount backup destination folder as read-write
-
-if [ "$read_only" == "1" ] || [ "$read_only" == "yes" ]; then
-   if [ -d "$mountpoint" ]; then
-      mount -o remount,rw $mountpoint
-      if (($?)); then
-         error "Could not mount $mountpoint"
-         exit 1
-      fi
-   fi
-fi
-
-# the backup procedure
-
-if [ ! -d "$backupdir/$folder/$folder.0" ]; then
-   mkdir -p $backupdir/$folder/$folder.0
-fi
-
-info "Rotating $backupdir/$folder/$folder..."
-echo "Rotating $backupdir/$folder/$folder..." >> $log
-rotate $backupdir/$folder/$folder $keep
-info "Wget'ing $SECTION on $backupdir/$folder/$folder.0..."
-
-if [ ! -z "$bandwidth" ]; then
-   limit_rate="--limit-rate=$bandwidth""k"
-fi
-
-cd $backupdir/$folder/$folder.0
-wget $wget_options $limit-rate -r -c -N -e robots=off $url
-cd -
-
-$touch $backupdir/$folder/$folder.0
-
-# remount backup destination as read-only
-
-if [ "$read_only" == "1" ] || [ "$read_only" == "yes" ]; then
-   mount -o remount,ro $mountpoint
-fi
-
-# check partition for errors
-
-if [ "$fscheck" == "1" ] || [ "$fscheck" == "yes" ]; then
-   umount $mountpoint
-   if (($?)); then
-      warning "Could not umount $mountpoint to run fsck"
-   else
-      $nice $fsck -v -y $partition >> $log
-      mount $mountpoint
-   fi
-fi
-
-# removes the lockfile
-
-if [ ! -z "$lockfile" ]; then
-   $rm $lockfile || warning "Could not remove lockfile $lockfile"
-fi
+do_backup
+mount_ro
+run_fsck
+unset_lockfile
 
 echo "Finnishing backup at `date`" >> $log
 
