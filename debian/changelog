@@ -1,3 +1,10 @@
+backupninja (0.9.10-2) unstable; urgency=low
+
+  * pkglibdir-FTBFS-fix.diff: cherry-pick upstream fix for pkglibdir not
+    being a legitimate directory for 'SCRIPTS' (Closes: #660617)
+
+ -- intrigeri <intrigeri@debian.org>  Sat, 07 Apr 2012 19:21:31 +0200
+
 backupninja (0.9.10-1) unstable; urgency=low
 
   * New upsteam release
