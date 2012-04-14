@@ -30,6 +30,7 @@ Suggests:
  rdiff-backup,
  rsync,
  subversion,
+ trickle,
  wodim
 Description: lightweight, extensible meta-backup system
  Backupninja lets you drop simple config files in /etc/backup.d to
@@ -49,7 +50,7 @@ Description: lightweight, extensible meta-backup system
  Most handlers have their own dependencies/recommendations, shown in brackets
  bellow:
  .
-  - dup [duplicity]
+  - dup [duplicity, trickle]
   - rdiff [rdiff-backup]
   - sys [debconf-utils, hwinfo, mdadm]
   - makecd [genisoimage, wodim]
