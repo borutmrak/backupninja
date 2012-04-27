@@ -1,3 +1,15 @@
+backupninja (1.0~rc1-1) unstable; urgency=low
+
+  duplicity 0.6.17 and later has moved to a new sftp/scp backend
+  which no longer uses sftp/scp client programs, but instead relies on
+  paramiko, a Python ssh+sftp implementation.
+
+  Therefore, the sshoptions option of the backupninja duplicity handler
+  cannot be used for anything but the one supported by this new backend:
+  -oIdentityfile=some_key_file -- all other ssh options are ignored.
+
+ -- intrigeri <intrigeri@debian.org>  Fri, 27 Apr 2012 23:07:11 +0200
+
 backupninja (0.9.10-1) unstable; urgency=low
 
   Being severely broken for ages (see #596935), LDAP support was removed upstream.
