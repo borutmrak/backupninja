@@ -1,3 +1,18 @@
+backupninja (1.0~rc1-1) unstable; urgency=low
+
+  * Imported Upstream version 1.0-rc1
+    (Closes: #657201, #536858, #654192, #656968, #654708)
+  * Drop obsolete pkglibdir-FTBFS-fix.diff: applied upstream.
+  * Bump Standards-Version to 3.9.3 (no change required).
+  * Suggest trickle package, now needed for duplicity traffic shaping.
+  * Add NEWS entry for duplicity changes.
+  * Revamp git-buildpackage configuration:
+    - Update upstream-tag setting to reflect reality.
+    - Use an upstream branch into which we can import upstream tarballs.
+    - Use pristine-tar.
+
+ -- intrigeri <intrigeri@debian.org>  Tue, 15 May 2012 17:23:13 +0200
+
 backupninja (0.9.10-2) unstable; urgency=low
 
   * pkglibdir-FTBFS-fix.diff: cherry-pick upstream fix for pkglibdir not
