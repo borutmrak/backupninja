@@ -286,6 +286,12 @@ nicelevel = $dup_nicelevel
 # if 'desturl' is set below, 'testconnect' must be set to 'no' for now.
 testconnect = $dup_testconnect
 
+## temporary directory used by duplicity, set to some other location if your /tmp is small
+## default is either /tmp or /usr/tmp, depending on the system
+##
+## Default:
+# tmpdir = /tmp
+
 ######################################################
 ## gpg section
 ## (how to encrypt and optionally sign the backups)
@@ -448,6 +454,16 @@ keepincroffulls = $dup_keepincroffulls
 #awsaccesskeyid = YOUR_AWS_ACCESS_KEY_ID
 #awssecretaccesskey = YOUR_AWS_SECRET_KEY
 
+## RackSpace's CloudFiles username, API key, and authentication URL.
+## cfusername = YOUR_CF_USERNAME
+## cfapikey = YOUR_CF_API_KEY
+## cfauthurl = YOUR_CF_AUTH_URL
+##
+## Default:
+# cfusername = 
+# cfapikey = 
+# cfauthurl = 
+
 # FTP password, needed for backups using desturl = ftp://...
 #ftp_password = 
 
@@ -457,11 +473,20 @@ keepincroffulls = $dup_keepincroffulls
 #bandwidthlimit = 128
 bandwidthlimit = $dup_bandwidth
 
-# passed directly to ssh, scp (and sftp in duplicity >=0.4.2)
-# warning: sftp does not support all scp options, especially -i; as
-# a workaround, you can use "-o <SSHOPTION>"
-#sshoptions = -o IdentityFile=/root/.ssh/id_rsa_duplicity
-sshoptions = $dup_sshoptions
+## duplicity < 0.6.17
+## ------------------
+## passed directly to ssh, scp (and sftp in duplicity >=0.4.2)
+## warning: sftp does not support all scp options, especially -i; as
+## a workaround, you can use "-o <SSHOPTION>"
+## an example setting would be:
+## sshoptions = -o IdentityFile=/root/.ssh/id_rsa_duplicity
+##
+## duplicity >= 0.6.17
+## ------------------
+## supports only "-o IdentityFile=..."
+##
+## Default:
+# sshoptions = 
 
 # put the backups under this destination directory
 # if using 'desturl' above, this must not be set
