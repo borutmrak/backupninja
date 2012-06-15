@@ -1,5 +1,5 @@
 %define name    backupninja
-%define version 1.0-rc1
+%define version 1.0
 
 Summary:    Backupninja backup tool
 Name:       %{name}
