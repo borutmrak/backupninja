@@ -1,3 +1,19 @@
+version 1.0 -- June 15, 2012
+    The "happy birthdays" release!
+    handler changes
+	mysql:
+	 . Use --skip-events when backing up the performance_schema database.
+	   (Closes: #673572)
+	rsync:
+	 . Generate excludes command-line snippet the same way as
+	   the duplicity handler does.
+	 . Run rsync command-line through a shell, so that single-quotes
+	   around excludes are interpreted (Closes: #677410)
+	sys:
+	 . Don't execute /usr/bin/lspci or /sbin/modinfo when $hardware == "no"
+    backupninja changes
+	 . Make it clear what lockfile could not be acquired, if any.
+
 version 1.0-rc1 -- May 15, 2012
     handler changes
 	dup:
