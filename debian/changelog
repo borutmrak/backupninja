@@ -1,3 +1,24 @@
+backupninja (1.0-1) unstable; urgency=low
+
+  * The "Happy Birthdays!" release.
+  * Imported Upstream version 1.0:
+    - handler changes
+        mysql:
+         . Use --skip-events when backing up the performance_schema
+           database. (Closes: #673572)
+        rsync:
+         . Generate excludes command-line snippet the same way as
+           the duplicity handler does.
+         . Run rsync command-line through a shell, so that single-quotes
+           around excludes are interpreted (Closes: #677410)
+        sys:
+         . Don't execute /usr/bin/lspci or /sbin/modinfo
+           when $hardware == "no".
+    - backupninja changes
+         . Make it clear what lockfile could not be acquired, if any.
+
+ -- intrigeri <intrigeri@debian.org>  Fri, 15 Jun 2012 20:41:55 +0200
+
 backupninja (1.0~rc1-1) unstable; urgency=low
 
   * Imported Upstream version 1.0-rc1
