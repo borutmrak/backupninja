@@ -1,6 +1,7 @@
 backupninja (1.0.1-1) unstable; urgency=low
 
   * Imported Upstream version 1.0.1
+  * Added Suggests: flashrom 
 
  -- intrigeri <intrigeri@debian.org>  Fri, 29 Jun 2012 22:42:35 +0200
 
