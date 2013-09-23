@@ -31,8 +31,7 @@ Suggests:
  rsync,
  subversion,
  trickle,
- wodim,
- flashrom
+ wodim
 Description: lightweight, extensible meta-backup system
  Backupninja lets you drop simple config files in /etc/backup.d to
  coordinate system backups. Backupninja is a master of many arts,
