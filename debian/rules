@@ -9,8 +9,8 @@ TMP = $(CURDIR)/debian/$(PACKAGE)
 
 override_dh_auto_install:
 	dh_auto_install
-	chmod -x $(TMP)/usr/lib/backupninja/parseini
-	chmod -x $(TMP)/usr/lib/backupninja/vserver
+	chmod a-x $(TMP)/usr/lib/backupninja/parseini
+	chmod a-x $(TMP)/usr/lib/backupninja/vserver
 	rm $(TMP)/usr/share/backupninja/example.*
 
 override_dh_compress:
