@@ -1,3 +1,11 @@
+backupninja (1.0.1-2) unstable; urgency=low
+
+  * Use chmod a-x instead of chmod -x, to avoid build failure with
+    strict umasks (Closes: #726097).
+  * Declare compliance with Standards-Version 3.9.4 (no change needed).
+
+ -- intrigeri <intrigeri@debian.org>  Sat, 12 Oct 2013 12:20:12 +0200
+
 backupninja (1.0.1-1) unstable; urgency=low
 
   * Imported Upstream version 1.0.1
