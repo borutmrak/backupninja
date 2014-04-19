@@ -1128,7 +1128,7 @@ function zfs_autosnapshot {
   fi
 
   # then checks mountpoint is a zfs dataset and creates snapshots.
-  zfsmountpoint=`dirname $mountpoint`
+  zfsmountpoint=`readlink -e $mountpoint`
   zfsdataset=`@AWK@ '$3 ~ /^zfs$/ {print $2 "  " $1;}' /proc/mounts | grep -e "^${zfsmountpoint}  " | awk '{print $2}'`
   if [ -z $zfsdataset ]; then
     warning "ZFS: $zfsmountpoint is not a ZFS dataset, exiting"
