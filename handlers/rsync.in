@@ -1117,11 +1117,14 @@ function check_rsync_exit_status {
 }
 
 function zfs_autosnapshot {
-  # checks if zfs-auto-snapshot is in path
+  # checks if zfs-auto-snapshot is in path and executable
   zfsautosnap=`which zfs-auto-snapshot`
-  if [ -z $zfssnap -o ! -x $zfsautosnap ]; then
-    warning "ZFS: zfs-auto-snapshot does not exist or not executable, doing nothing."
+  if [ ! -z $zfsautosnap ]; then
+    warning "ZFS: zfs-auto-snapshot not installed or not in path. Doing nothing."
     return
+  elif [ ! -x $zfsautosnap ]; then
+      warning "ZFS: $zfsautosnap is not executable, doing nothing."
+      return
   fi
 
   # then checks mountpoint is a zfs dataset and creates snapshots.
