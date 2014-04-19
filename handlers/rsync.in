@@ -1119,7 +1119,7 @@ function check_rsync_exit_status {
 function zfs_autosnapshot {
   # checks if zfs-auto-snapshot is in path and executable
   zfsautosnap=`which zfs-auto-snapshot`
-  if [ ! -z $zfsautosnap ]; then
+  if [ -z $zfsautosnap ]; then
     warning "ZFS: zfs-auto-snapshot not installed or not in path. Doing nothing."
     return
   elif [ ! -x $zfsautosnap ]; then
