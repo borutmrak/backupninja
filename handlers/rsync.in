@@ -1116,6 +1116,26 @@ function check_rsync_exit_status {
 
 }
 
+function zfs_autosnapshot {
+  # checks if zfs-auto-snapshot is in path
+  zfsautosnap=`which zfs-auto-snapshot`
+  if [ -z $zfssnap -o ! -x $zfsautosnap ]; then
+    warning "ZFS: zfs-auto-snapshot does not exist or not executable, doing nothing."
+    return
+  fi
+
+  # then checks mountpoint is a zfs dataset and creates snapshots.
+  zfsmountpoint=`dirname $mountpoint`
+  zfsdataset=`@AWK@ '$3 ~ /^zfs$/ {print $2 "  " $1;}' /proc/mounts | grep -e "^${zfsmountpoint}  " | awk '{print $2}'`
+  if [ -z $zfsdataset ]; then
+    warning "ZFS: $zfsmountpoint is not a ZFS dataset, exiting"
+    return
+  fi
+  
+  info "ZFS: running zfs-auto-snapshot..."
+  $zfsautosnap -v -p backupninja -l daily -k 7 -r ${zfsdataset}
+}
+
 # the backup procedure
 
 eval_config
@@ -1149,6 +1169,7 @@ done
 
 mount_ro
 run_fsck
+zfs_autosnapshot
 start_services
 end_mux
 
