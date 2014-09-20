@@ -53,6 +53,11 @@ then
    os=redhat
    debug "Redhat detected"
    osversion="/etc/redhat-release"
+elif [ -f /etc/SuSE-release ]
+then
+   os=suse
+   debug "SuSE detected"
+   osversion="/etc/SuSE-release"
 else
    warning "Unknown OS detected!"
 fi
@@ -66,14 +71,14 @@ if [ ! -d $parentdir ]; then
    mkdir -p $parentdir
 fi
 
-if [ $os = "debian" ]
+if [ "$os" = "debian" ]
 then
    getconf packagesfile $parentdir/dpkg-selections.txt
    getconf packagemgr   `which dpkg`
    getconf packagemgroptions ' --get-selections *'
    getconf selectionsfile $parentdir/debconfsel.txt
    getconf debconfgetselections `which debconf-get-selections`
-elif [ $os = "redhat" ]
+elif [ "$os" = "redhat" ]
 then
    getconf packagesfile  $parentdir/rpmpackages.txt
    getconf packagemgr   `which rpm`
@@ -81,6 +86,11 @@ then
 
    getconf SYSREPORT `which sysreport`
    getconf sysreport_options ' -norpm '
+elif [ "$os" = "suse" ]
+then
+   getconf packagesfile  $parentdir/rpmpackages.txt
+   getconf packagemgr   `which rpm`
+   getconf packagemgroptions   ' -qa '
 else
    getconf packagesfile $parentdir/unknownOS.txt
 fi
@@ -193,7 +203,7 @@ if [ "$packages" == "yes" ]; then
             # don't expand * since it can be used in $packagemgroptions
             set -o noglob
             debug "$VSERVER $vserver exec $packagemgr $packagemgroptions > $VROOTDIR/$vserver$packagesfile"
-       $VSERVER $vserver exec $packagemgr $packagemgroptions > $VROOTDIR/$vserver$packagesfile || fatal "can not save $packagemgr info to $packagesfile"
+            $VSERVER $vserver exec $packagemgr $packagemgroptions > $VROOTDIR/$vserver$packagesfile || fatal "can not save $packagemgr info to $packagesfile"
             set +o noglob
          fi
          # is $debconfgetselections available inside $vserver ?
@@ -261,7 +271,7 @@ catiffile () {
       echo $DASHES >> $sysreportfile
       for file in `find $1 -maxdepth 3 -noleaf -type f`
       do
-       catiffile $file
+         catiffile $file
       done
    fi
    echo $DASHES >> $sysreportfile
@@ -293,7 +303,7 @@ STATUS="Checking available memory:"
 catifexec "/usr/bin/free"
 
 STATUS="Checking free disk space:"
-catifexec "/bin/df" "-al"
+catifexec "/bin/df" "-al --exclude-type=tmpfs"
 
 STATUS="Collecting what services run at what run level:"
 if [ $os = "redhat" ]; then
@@ -548,14 +558,14 @@ fi
 if [ "$partitions" == "yes" ]; then
    if [ "$dosfdisk" == "yes" ]; then
       if [ ! -x "$SFDISK" ]; then
-    warning "can't find sfdisk, skipping sfdisk report."
-    partitions="no"
+         warning "can't find sfdisk, skipping sfdisk report."
+         partitions="no"
       fi
    fi
    if [ "$dohwinfo" == "yes" ]; then
       if [ ! -x "$HWINFO" ]; then
-    warning "can't find hwinfo, skipping partition report."
-    partitions="no"
+         warning "can't find hwinfo, skipping partition report."
+         partitions="no"
       fi
    fi
 fi
@@ -577,15 +587,15 @@ fi
 if [ "$hardware" == "yes" ]; then
    if [ "$dohwinfo" == "yes" ]; then
       if [ -f $hardwarefile ]; then
-    rm $hardwarefile
+         rm $hardwarefile
       fi
       touch $hardwarefile
       echo -e "\n\n====================== summary ======================\n" >>  $hardwarefile
       debug "$HWINFO --short --cpu --network --disk --pci  >> $hardwarefile"
       $HWINFO --short --cpu --network --disk --pci  >> $hardwarefile
       for flag in cpu network bios pci; do
-    echo -e "\n\n====================== $flag ======================\n" >>  $hardwarefile
-    $HWINFO --$flag >> $hardwarefile
+         echo -e "\n\n====================== $flag ======================\n" >>  $hardwarefile
+         $HWINFO --$flag >> $hardwarefile
       done
    fi
 fi
@@ -598,21 +608,21 @@ fi
 if [ "$partitions" == "yes" ]; then
    if [ "$dosfdisk" == "yes" ]; then
       devices=`LC_ALL=C $SFDISK -l 2>/dev/null | grep "^Disk /dev" | @AWK@ '{print $2}' | cut -d: -f1`
-   if [ "$devices" == "" ]; then
-      warning "No harddisks found"
-   fi
-   for dev in $devices; do
-      debug "$SFDISK will try to backup partition tables for device $dev"
-      [ -b $dev ] || continue
-      label=${dev#/dev/}
-      label=${label//\//-}
-      outputfile=${partitionsfile//__star__/$label}
-      debug "$SFDISK $sfdisk_options -d $dev > $outputfile 2>/dev/null"
-      $SFDISK $sfdisk_options -d $dev > $outputfile 2>/dev/null
-      if [ $? -ne 0 ]; then
-         warning "The partition table for $dev could not be saved."
+      if [ "$devices" == "" ]; then
+         warning "No harddisks found"
       fi
-   done
+      for dev in $devices; do
+         debug "$SFDISK will try to backup partition tables for device $dev"
+         [ -b $dev ] || continue
+         label=${dev#/dev/}
+         label=${label//\//-}
+         outputfile=${partitionsfile//__star__/$label}
+         debug "$SFDISK $sfdisk_options -d $dev > $outputfile 2>/dev/null"
+         $SFDISK $sfdisk_options -d $dev > $outputfile 2>/dev/null
+         if [ $? -ne 0 ]; then
+            warning "The partition table for $dev could not be saved."
+         fi
+      done
    fi
    if [ "$dohwinfo" == "yes" ]; then
       debug "Using $HWINFO to get all available disk information"
